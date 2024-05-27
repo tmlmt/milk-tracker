@@ -1,6 +1,7 @@
 from nicegui import ui
 from textwrap import dedent
 from datetime import datetime
+from dotenv import load_dotenv
 import pandas as pd
 import os
 from lib.time_utils import timedelta_to_hrmin, is_time_format
@@ -10,6 +11,7 @@ from lib.pandas_utils import prepend_series_to_df, append_series_to_df
 ASSETS_DIR = "assets"
 FILE_NAME = "journal.xlsx"
 PLOTLY_DEFAULT_CONFIG = {"staticPlot": True}
+load_dotenv()
 
 df = pd.read_excel(os.path.join(ASSETS_DIR, FILE_NAME))
 
@@ -394,4 +396,13 @@ def generate_summary_table(df: pd.DataFrame) -> ui.table:
 with ui.element() as table_summary_container:
     generate_summary_table(df)
 
-ui.run(port=6520, show=False, title="Milk Tracker")
+# Common parameters for ui.run
+run_params = {"port": 6520, "show": False, "title": "Milk Tracker"}
+
+# Run in HTTPS if a certificate is given in the .env file
+if all(s in os.environ for s in ["SSL_KEYFILE", "SSL_CERTFILE"]):
+    run_params.update(
+        {"ssl_certfile": os.environ["SSL_CERTFILE"], "ssl_keyfile": os.environ["SSL_KEYFILE"]}
+    )
+
+ui.run(**run_params)
