@@ -394,4 +394,4 @@ def generate_summary_table(df: pd.DataFrame) -> ui.table:
 with ui.element() as table_summary_container:
     generate_summary_table(df)
 
-ui.run(title="Milk Tracker")
+ui.run(port=6520, show=False, title="Milk Tracker")
