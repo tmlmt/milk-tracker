@@ -344,6 +344,17 @@ def main_page() -> None:
     with ui.element() as table_latest_meals_container:
         generate_latest_meals_table(df)
 
+    def delete_latest_meal(df):
+        # Merging and saving to file
+        df.drop(df.tail(1).index, inplace=True)
+        save_to_file(df, os.path.join(ASSETS_DIR, FILE_NAME))
+        # Updating UI
+        force_update(df)
+        # Success message
+        ui.notify("Latest meal removed from history", type="positive")
+
+    ui.button("Delete last meal", on_click=lambda: delete_latest_meal(df), color="negative")
+
     ui.markdown("## Graphs")
 
     def generate_graph(df, field: str, title: str, yaxis_title: str) -> dict:
