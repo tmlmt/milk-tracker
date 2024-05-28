@@ -147,16 +147,16 @@ def main_page() -> None:
     latest_meal_info = get_latest_meal_info()
     current_time = f"{datetime.now():%X}"
 
-    def continuous_update() -> None:
+    def continuous_update(force_all: bool = False) -> None:
         global current_time, time_since_latest_end, time_since_latest_start
         current_time = get_current_time()
-        if current_time[-2:] == "00":
+        if current_time[-2:] == "00" or force_all:
             time_since_latest_end = get_time_since_latest_end()
             time_since_latest_start = get_time_since_latest_start()
 
     def force_update(df) -> None:
         global latest_meal_info, table_latest_meals
-        continuous_update()
+        continuous_update(force_all=True)
         latest_meal_info = get_latest_meal_info()
         table_latest_meals_container.clear()
         with table_latest_meals_container:
