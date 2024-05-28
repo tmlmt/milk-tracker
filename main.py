@@ -96,7 +96,7 @@ def main_page() -> None:
         # Calculate duration
         df["duration"] = df["end_datetime"] - df["start_datetime"]
         df["duration_hrmin"] = df["duration"].apply(timedelta_to_hrmin)
-        df["duration_hrs"] = round(df["duration"].dt.total_seconds() / 3600, 2)
+        df["duration_min"] = round(df["duration"].dt.total_seconds() / 60, 2)
 
         # Calculate other things of interest
         df["previous_end_datetime"] = df["end_datetime"].shift(1)
@@ -166,9 +166,9 @@ def main_page() -> None:
         figure_duration.update_figure(
             generate_graph(
                 df,
-                "duration_hrs",
+                "duration_min",
                 "Duration as a Function of Start Time for the Latest Three Dates",
-                "Duration (hrs)",
+                "Duration (min)",
             )
         )
         figure_time_since_previous_start.update_figure(
@@ -382,9 +382,9 @@ def main_page() -> None:
     figure_duration = ui.plotly(
         generate_graph(
             df,
-            "duration_hrs",
+            "duration_min",
             "Duration as a Function of Start Time for the Latest Three Dates",
-            "Duration (hrs)",
+            "Duration (min)",
         )
     )
     figure_time_since_previous_start = ui.plotly(
