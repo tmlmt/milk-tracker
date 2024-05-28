@@ -263,7 +263,7 @@ def main_page() -> None:
     with ui.row().classes("items-stretch"):
         with ui.column():
             ui.markdown("##### Date")
-            with ui.input(value=get_current_date()) as new_date:
+            with ui.input(value=get_current_date()).classes("w-36") as new_date:
                 with new_date.add_slot("append"):
                     ui.icon("edit_calendar").on("click", lambda: menu_new_date.open()).classes(
                         "cursor-pointer"
@@ -277,7 +277,9 @@ def main_page() -> None:
                     "Now",
                     on_click=lambda: new_start_time.set_value(get_current_time(include_sec=False)),
                 ).classes("h-full")
-                with ui.input(value=get_current_time(include_sec=False)) as new_start_time:
+                with ui.input(value=get_current_time(include_sec=False)).classes(
+                    "w-24"
+                ) as new_start_time:
                     with new_start_time.add_slot("append"):
                         ui.icon("access_time").on(
                             "click", lambda: menu_new_start_time.open()
@@ -293,7 +295,7 @@ def main_page() -> None:
                     "Now",
                     on_click=lambda: new_end_time.set_value(get_current_time(include_sec=False)),
                 ).classes("h-full")
-                with ui.input() as new_end_time:
+                with ui.input().classes("w-24") as new_end_time:
                     with new_end_time.add_slot("append"):
                         ui.icon("access_time").on(
                             "click", lambda: menu_new_end_time.open()
@@ -302,13 +304,13 @@ def main_page() -> None:
                         with ui.time().props("format24h").bind_value(new_end_time):
                             with ui.row().classes("justify-end"):
                                 ui.button("Close", on_click=menu_new_end_time.close)
-        with ui.column():
+        with ui.column().classes("justify-end"):
             ui.button(
                 "Add",
                 on_click=lambda: add_entry(
                     df, new_date.value, new_start_time.value, new_end_time.value
                 ),
-            ).classes("h-full w-20")
+            ).classes("h-14 w-20")
 
     ui.markdown("## 10 last meals")
 
