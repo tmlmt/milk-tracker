@@ -128,10 +128,10 @@ def main_page() -> None:
 
     def get_latest_meal_info() -> str:
         return f"""\
-        - Date: {df.iloc[-1]["date"].date()}
-        - Start time: {df.iloc[-1]["start_time"]}
-        - End time: {df.iloc[-1]["end_time"]}
-        - Duration: {df.iloc[-1]["duration_hrmin"]}
+        Date: {df.iloc[-1]["date"].date()}<br />
+        Start time: {df.iloc[-1]["start_time"]}<br />
+        End time: {df.iloc[-1]["end_time"]}<br />
+        Duration: {df.iloc[-1]["duration_hrmin"]}
         """
 
     def get_current_time(include_sec=True) -> str:
