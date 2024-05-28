@@ -400,7 +400,10 @@ with ui.element() as table_summary_container:
 run_params = {"port": 6520, "show": False, "title": "Milk Tracker"}
 
 # Run in HTTPS if a certificate is given in the .env file
-if all(s in os.environ for s in ["SSL_KEYFILE", "SSL_CERTFILE"]):
+if (
+    all(s in os.environ for s in ["SSL_ENABLED", "SSL_KEYFILE", "SSL_CERTFILE"])
+    and os.environ["SSL_ENABLED"] == "True"
+):
     run_params.update(
         {"ssl_certfile": os.environ["SSL_CERTFILE"], "ssl_keyfile": os.environ["SSL_KEYFILE"]}
     )
