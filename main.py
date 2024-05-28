@@ -4,7 +4,6 @@ from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 from fastapi.responses import RedirectResponse
 from nicegui import app, ui
-from textwrap import dedent
 from datetime import datetime
 from dotenv import load_dotenv
 import pandas as pd
@@ -128,12 +127,12 @@ def main_page() -> None:
         return pd.Timestamp.now() - df.iloc[-1]["start_datetime"]
 
     def get_latest_meal_info() -> str:
-        return dedent(f"""\
+        return f"""\
         - Date: {df.iloc[-1]["date"].date()}
         - Start time: {df.iloc[-1]["start_time"]}
         - End time: {df.iloc[-1]["end_time"]}
         - Duration: {df.iloc[-1]["duration_hrmin"]}
-        """)
+        """
 
     def get_current_time(include_sec=True) -> str:
         return f"{datetime.now():%X}" if include_sec else f"{datetime.now():%H:%M}"
