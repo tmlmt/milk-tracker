@@ -1,6 +1,9 @@
 # Backup files
 *.backup.*
 
+# NiceGUI Storage
+.nicegui/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
