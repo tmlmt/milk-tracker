@@ -366,12 +366,17 @@ def main_page() -> None:
                 }
             )
 
+        max_y = max(df[df["date"].isin(latest_dates)][field])
+
         fig = {
             "data": data,
             "layout": {
                 "title": title,
                 "xaxis": {"title": "Start Time", "tickformat": "%Hh%M"},
-                "yaxis": {"title": yaxis_title},
+                "yaxis": {
+                    "title": yaxis_title,
+                    "range": [-max_y * 0.05, max_y * 1.05],
+                },
             },
         }
 
