@@ -266,12 +266,12 @@ def main_page() -> None:
             with ui.input(value=get_current_date()).props(
                 "mask='####-##-##' :rules='[v => /^[0-9]+-[0-1][0-9]-[0-3][0-9]$/.test(v) || \"Invalid date\"]' lazy-rules"
             ).classes("w-36") as new_date:
+                with ui.menu().props("auto-close no-parent-event") as menu_new_date:
+                    ui.date().bind_value(new_date)
                 with new_date.add_slot("append"):
-                    ui.icon("edit_calendar").on("click", lambda: menu_new_date.open()).classes(
+                    ui.icon("edit_calendar").on("click", menu_new_date.open).classes(
                         "cursor-pointer"
                     )
-                with ui.menu().props("auto-close") as menu_new_date:
-                    ui.date().bind_value(new_date)
         with ui.column():
             ui.markdown("##### Start time")
             with ui.row().classes("items-stretch"):
@@ -282,14 +282,14 @@ def main_page() -> None:
                 with ui.input(value=get_current_time(include_sec=False)).props(
                     "mask='time' :rules='[ (val, rules) => rules.time(val) || \"Invalid time\"]' lazy-rules"
                 ).classes("w-24") as new_start_time:
-                    with new_start_time.add_slot("append"):
-                        ui.icon("access_time").on(
-                            "click", lambda: menu_new_start_time.open()
-                        ).classes("cursor-pointer")
-                    with ui.menu() as menu_new_start_time:
+                    with ui.menu().props("no-parent-event") as menu_new_start_time:
                         with ui.time().props("format24h").bind_value(new_start_time):
                             with ui.row().classes("justify-end"):
                                 ui.button("Close", on_click=menu_new_start_time.close)
+                    with new_start_time.add_slot("append"):
+                        ui.icon("access_time").on("click", menu_new_start_time.open).classes(
+                            "cursor-pointer"
+                        )
         with ui.column():
             ui.markdown("##### End time")
             with ui.row().classes("items-stretch"):
@@ -300,14 +300,14 @@ def main_page() -> None:
                 with ui.input().props(
                     "mask='time' :rules='[ (val, rules) => rules.time(val) || \"Invalid time\"]' lazy-rules"
                 ).classes("w-24") as new_end_time:
-                    with new_end_time.add_slot("append"):
-                        ui.icon("access_time").on(
-                            "click", lambda: menu_new_end_time.open()
-                        ).classes("cursor-pointer")
-                    with ui.menu() as menu_new_end_time:
+                    with ui.menu().props("no-parent-event") as menu_new_end_time:
                         with ui.time().props("format24h").bind_value(new_end_time):
                             with ui.row().classes("justify-end"):
                                 ui.button("Close", on_click=menu_new_end_time.close)
+                    with new_end_time.add_slot("append"):
+                        ui.icon("access_time").on("click", menu_new_end_time.open).classes(
+                            "cursor-pointer"
+                        )
         with ui.column().classes("justify-end"):
             ui.button(
                 "Add",
