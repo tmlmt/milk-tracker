@@ -1,0 +1,40 @@
+# gh workflow run workflow-name.yml -f param1=value1 -f param2=value2
+
+name: CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch_name:
+        description: "Branch name"
+        required: false
+        default: "main"
+      reference:
+        description: "Reference to add in run name"
+        required: false
+        default: "main branch"
+
+run-name: Deploy ${{ github.event.inputs.reference }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch_name }}
+      - name: Deploy to Production server
+        uses: easingthemes/ssh-deploy@main
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_USER: ${{ secrets.SSH_USER }}
+          REMOTE_PORT: ${{ secrets.SSH_PORT }}
+          SOURCE: "milk_tracker"
+          TARGET: "/home/${{ secrets.SSH_USER }}/www"
+          SCRIPT_BEFORE: |
+            systemctl --user stop milk-tracker
+          SCRIPT_AFTER: |
+            systemctl --user start milk-tracker
