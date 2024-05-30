@@ -1,6 +1,9 @@
 # Backup files
 *.backup.*
 
+# Main asset
+journal.xlsx
+
 # NiceGUI Storage
 .nicegui/
 
