@@ -220,6 +220,7 @@ def main_page() -> None:
         # Clearing inputs
         new_end_time.set_value("")
         new_start_time.set_value(get_current_time(include_sec=False))
+        switch_lock_start_time.set_value(False)
         new_date.set_value(get_current_date())
         # Updating UI
         force_update(df)
@@ -278,8 +279,16 @@ def main_page() -> None:
                 ui.button(
                     "Now",
                     on_click=lambda: new_start_time.set_value(get_current_time(include_sec=False)),
+                ).bind_enabled_from(
+                    app.storage.general, "newmeal_is_locked", backward=lambda x: not x
                 ).classes("h-full")
-                with ui.input(value=get_current_time(include_sec=False)).props(
+                with ui.input(
+                    value=app.storage.general.get(
+                        "newmeal_start_time", get_current_time(include_sec=False)
+                    )
+                ).bind_enabled_from(
+                    app.storage.general, "newmeal_is_locked", backward=lambda x: not x
+                ).props(
                     "mask='time' :rules='[ (val, rules) => rules.time(val) || \"Invalid time\"]' lazy-rules"
                 ).classes("w-24") as new_start_time:
                     with ui.menu().props("no-parent-event") as menu_new_start_time:
@@ -315,6 +324,26 @@ def main_page() -> None:
                     df, new_date.value, new_start_time.value, new_end_time.value
                 ),
             ).classes("h-20 w-20")
+
+    def toggle_newmeal_lock(e) -> None:
+        if e.value:
+            if not new_start_time.value or len(new_start_time.value) != 5:
+                new_start_time.set_value(get_current_time(include_sec=False))
+            app.storage.general.update({"newmeal_start_time": new_start_time.value})
+        else:
+            app.storage.general.pop("newmeal_start_time")
+
+    with ui.column():
+        ui.markdown("##### Record meal")
+        switch_lock_start_time = (
+            ui.switch(
+                "Lock start time",
+                value=app.storage.general.get("newmeal_is_locked", False),
+                on_change=toggle_newmeal_lock,
+            )
+            .props("icon='lock_clock'")
+            .bind_value(app.storage.general, "newmeal_is_locked")
+        )
 
     ui.markdown("## 10 last meals")
 
