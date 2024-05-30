@@ -1,6 +1,23 @@
 # Changelog
 
 ---
+## [1.2.0](https://github.com/tmlmt/milk-tracker/compare/v1.1.0..v1.2.0) - 2024-05-30
+
+### 🚀 Enhancements
+
+- **(new_meal)** lock start time - ([a9077ce](https://github.com/tmlmt/milk-tracker/commit/a9077cec861fce9e44c49331d8f196f191ab7061)) - Thomas Lamant
+- delete latest meal - ([a96ebdd](https://github.com/tmlmt/milk-tracker/commit/a96ebdd73077bbe8e144e6fcab62668a1a7d22a4)) - Thomas Lamant
+
+### 🤖 CI
+
+- deploy workflow (#7) - ([eacb7aa](https://github.com/tmlmt/milk-tracker/commit/eacb7aa82ee9aa4a366335bf794cc82daabfdcf1)) - Thomas Lamant
+
+### 🏡 Chore
+
+- **(changelog)** fix repo url - ([592d7b3](https://github.com/tmlmt/milk-tracker/commit/592d7b396493082c9bef8b4bd2711967c68cacdd)) - Thomas Lamant
+- ignore journal files and replace file in repo with template - ([de96af5](https://github.com/tmlmt/milk-tracker/commit/de96af5360a1f322291758962e42e1391a12f487)) - Thomas Lamant
+
+---
 ## [1.1.0](https://github.com/tmlmt/milktracker/compare/v1.0.0..v1.1.0) - 2024-05-28
 
 ### 🚀 Enhancements
