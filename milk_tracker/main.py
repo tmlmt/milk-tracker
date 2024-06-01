@@ -1,16 +1,18 @@
 import os
 from datetime import datetime
 from pathlib import Path
+from typing import Union
 
 import pandas as pd
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 from dotenv import load_dotenv
 from fastapi.responses import RedirectResponse
-from middleware.auth import AuthMiddleware
 from nicegui import app, ui
-from utils.pandas_utils import append_series_to_df, prepend_series_to_df
-from utils.time_utils import is_time_format, timedelta_to_hrmin
+
+from .middleware.auth import AuthMiddleware
+from .utils.pandas_utils import append_series_to_df, prepend_series_to_df
+from .utils.time_utils import is_time_format, timedelta_to_hrmin
 
 # Configuration
 ASSETS_DIR = "assets"
@@ -27,8 +29,15 @@ app.add_middleware(AuthMiddleware)
 ph = PasswordHasher()
 
 
+# Declaration
+current_time = None
+time_since_latest_end = None
+time_since_latest_start = None
+latest_meal_info = None
+
+
 @ui.page("/login")
-def login() -> None:  # noqa: D103
+def login() -> Union[None, RedirectResponse]:  # noqa: D103
     def try_login() -> None:  # local function to avoid passing username and password as arguments
         if not os.environ["PASSWORD"]:
             ui.notify("Access deactivated", color="warning")
@@ -195,7 +204,7 @@ def main_page() -> None:  # noqa: D103
 
     # Add new entry
 
-    def add_entry(df: pd.DataFrame, date, start_time, end_time) -> None:
+    def add_entry(df: pd.DataFrame, date, start_time, end_time) -> bool:
         # Validation
         if not end_time or not date or not start_time:
             ui.notify("All fields must be filled in", type="negative")
@@ -215,10 +224,10 @@ def main_page() -> None:  # noqa: D103
         )
         # To compute all columns, we also need the previous meal
         new_entry = compute_columns(
-            prepend_series_to_df(df.iloc[-1][["date", "start_time", "end_time"]], new_entry)
-        ).iloc[-1]
+            pd.concat([df.iloc[[-1]][["date", "start_time", "end_time"]], new_entry])
+        ).iloc[[-1]]
         # Merging and saving to file
-        df = append_series_to_df(new_entry, df)
+        df = pd.concat([df, new_entry])
         save_to_file(df, Path(ASSETS_DIR) / FILE_NAME)
         # Clearing inputs
         new_end_time.set_value("")
@@ -229,9 +238,9 @@ def main_page() -> None:  # noqa: D103
         force_update(df)
         # Success message
         ui.notify("Meal added to history", type="positive")
-        return None
+        return True
 
-    def save_to_file(df: pd.DataFrame, file_path: str) -> None:
+    def save_to_file(df: pd.DataFrame, file_path: Path) -> None:
         df[["date", "start_time", "end_time"]].to_excel(file_path, index=False)
 
     ui.markdown("# Milk Tracker")
@@ -522,4 +531,4 @@ if (
         {"ssl_certfile": os.environ["SSL_CERTFILE"], "ssl_keyfile": os.environ["SSL_KEYFILE"]}
     )
 
-ui.run(**run_params)
+ui.run(**run_params)  # type: ignore
