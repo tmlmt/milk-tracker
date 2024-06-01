@@ -1,2 +1,16 @@
 # Allow lines to be as long as 100.
 line-length = 100
+
+[lint]
+# Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
+# Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
+# McCabe complexity (`C901`) by default.
+select = ["ALL"]
+ignore = [
+    "FA",     # flake8-future-annotations
+    "COM",    # flake8-commas: conflicting with ruff formatter
+    "DTZ",    # flake8-datetimez: it's OK, it's a simple app running locally
+    "SIM117", #	multiple-with-statements: contrary to its intention, can lead to unreadable code
+    "D100",   # undocumented-public-module: too verbose
+    "D104"    # undocumented-public-package: too verbose
+]

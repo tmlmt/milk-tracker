@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from pathlib import Path
 from typing import Optional
 
 import pandas as pd
@@ -28,7 +29,7 @@ ph = PasswordHasher()
 
 
 @ui.page("/login")
-def login() -> Optional[RedirectResponse]:
+def login() -> Optional[RedirectResponse]:  # noqa: D103
     def try_login() -> None:  # local function to avoid passing username and password as arguments
         if not os.environ["PASSWORD"]:
             ui.notify("Access deactivated", color="warning")
@@ -71,10 +72,10 @@ def login() -> Optional[RedirectResponse]:
 
 
 @ui.page("/")
-def main_page() -> None:
+def main_page() -> None:  # noqa: D103
     global current_time, time_since_latest_end, time_since_latest_start, latest_meal_info
 
-    df = pd.read_excel(os.path.join(ASSETS_DIR, FILE_NAME))
+    df = pd.read_excel(Path(ASSETS_DIR) / FILE_NAME)
 
     # -- Clean dataset
     # When there's no end_time, make it equal to start time
@@ -149,14 +150,14 @@ def main_page() -> None:
     latest_meal_info = get_latest_meal_info()
     current_time = f"{datetime.now():%X}"
 
-    def continuous_update(force_all: bool = False) -> None:
+    def continuous_update(*, force_all: bool = False) -> None:
         global current_time, time_since_latest_end, time_since_latest_start
         current_time = get_current_time()
         if current_time[-2:] == "00" or force_all:
             time_since_latest_end = get_time_since_latest_end()
             time_since_latest_start = get_time_since_latest_start()
 
-    def force_update(df) -> None:
+    def force_update(df: pd.DataFrame) -> None:
         global latest_meal_info, table_latest_meals
         continuous_update(force_all=True)
         latest_meal_info = get_latest_meal_info()
@@ -195,7 +196,7 @@ def main_page() -> None:
 
     # Add new entry
 
-    def add_entry(df, date, start_time, end_time):
+    def add_entry(df: pd.DataFrame, date, start_time, end_time) -> None:
         # Validation
         if not end_time or not date or not start_time:
             ui.notify("All fields must be filled in", type="negative")
@@ -219,7 +220,7 @@ def main_page() -> None:
         ).iloc[-1]
         # Merging and saving to file
         df = append_series_to_df(new_entry, df)
-        save_to_file(df, os.path.join(ASSETS_DIR, FILE_NAME))
+        save_to_file(df, Path(ASSETS_DIR) / FILE_NAME)
         # Clearing inputs
         new_end_time.set_value("")
         new_start_time.set_value(get_current_time(include_sec=False))
@@ -229,8 +230,9 @@ def main_page() -> None:
         force_update(df)
         # Success message
         ui.notify("Meal added to history", type="positive")
+        return None
 
-    def save_to_file(df, file_path):
+    def save_to_file(df: pd.DataFrame, file_path: str) -> None:
         df[["date", "start_time", "end_time"]].to_excel(file_path, index=False)
 
     ui.markdown("# Milk Tracker")
@@ -268,7 +270,9 @@ def main_page() -> None:
         with ui.column():
             ui.markdown("##### Date")
             with ui.input(value=get_current_date()).props(
-                "mask='####-##-##' :rules='[v => /^[0-9]+-[0-1][0-9]-[0-3][0-9]$/.test(v) || \"Invalid date\"]' lazy-rules"
+                "mask='####-##-##' "
+                ":rules='[v => /^[0-9]+-[0-1][0-9]-[0-3][0-9]$/.test(v) || \"Invalid date\"]' "
+                "lazy-rules"
             ).classes("w-36") as new_date:
                 with ui.menu().props("auto-close no-parent-event") as menu_new_date:
                     ui.date().bind_value(new_date)
@@ -350,7 +354,7 @@ def main_page() -> None:
 
     ui.markdown("## 10 last meals")
 
-    def generate_latest_meals_table(df):
+    def generate_latest_meals_table(df) -> ui.table:
         return ui.table.from_pandas(
             df.tail(10)[
                 [
@@ -376,10 +380,10 @@ def main_page() -> None:
     with ui.element() as table_latest_meals_container:
         generate_latest_meals_table(df)
 
-    def delete_latest_meal(df):
+    def delete_latest_meal(df) -> None:
         # Merging and saving to file
-        df.drop(df.tail(1).index, inplace=True)
-        save_to_file(df, os.path.join(ASSETS_DIR, FILE_NAME))
+        df = df.drop(df.tail(1).index)
+        save_to_file(df, Path(ASSETS_DIR) / FILE_NAME)
         # Updating UI
         force_update(df)
         # Success message
@@ -394,7 +398,9 @@ def main_page() -> None:
         latest_dates = df["date"].drop_duplicates().nlargest(3)
 
         data = []
-        for i, date in enumerate(latest_dates):
+        for _, date in enumerate(
+            latest_dates
+        ):  # TODO @tmlmt: check whether I can loop directly instead of enumerate
             date_data = df[df["date"] == date]
             data.append(
                 {
@@ -411,7 +417,7 @@ def main_page() -> None:
 
         max_y = max(df[df["date"].isin(latest_dates)][field])
 
-        fig = {
+        return {
             "data": data,
             "layout": {
                 "title": title,
@@ -424,10 +430,6 @@ def main_page() -> None:
             },
             "config": PLOTLY_DEFAULT_CONFIG,
         }
-
-        return fig
-
-        "Duration as a Function of Start Time for the Latest Three Dates"
 
     with ui.tabs() as tabs:
         ui.tab("duration", label="Duration")
@@ -484,7 +486,7 @@ def main_page() -> None:
         )
 
         # Rename the columns for clarity
-        summary_df.rename(
+        summary_df = summary_df.rename(
             columns={
                 "date": "Date",
                 "number_of_rows": "Number of meals",
@@ -492,8 +494,7 @@ def main_page() -> None:
                 "min": "Minimum duration",
                 "max": "Maximum duration",
                 "sum": "Cumulative duration",
-            },
-            inplace=True,
+            }
         )
 
         return ui.table.from_pandas(summary_df)
