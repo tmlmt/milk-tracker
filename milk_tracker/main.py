@@ -359,7 +359,7 @@ def main_page() -> None:
                     "time_since_previous_end_hrmin",
                 ]
             ].rename(
-                {
+                columns={
                     "date": "Date",
                     "start_time": "Start time",
                     "end_time": "End time",
