@@ -364,7 +364,8 @@ def main_page() -> None:  # noqa: D103
                     "time_since_previous_start_hrmin",
                     "time_since_previous_end_hrmin",
                 ]
-            ].rename(
+            ]
+            .rename(
                 columns={
                     "date": "Date",
                     "start_time": "Start time",
@@ -374,6 +375,7 @@ def main_page() -> None:  # noqa: D103
                     "time_since_previous_end_hrmin": "Time since previous end",
                 }
             )
+            .iloc[::-1]
         )
 
     with ui.element() as table_latest_meals_container:
