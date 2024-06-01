@@ -15,6 +15,7 @@
         "source.organizeImports.ruff": "explicit"
       }
     },
-    "autoDocstring.docstringFormat": "numpy"
+    "autoDocstring.docstringFormat": "numpy",
+    "mypy-type-checker.preferDaemon": false
   }
 }
