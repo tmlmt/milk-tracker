@@ -12,5 +12,8 @@ ignore = [
     "DTZ",    # flake8-datetimez: it's OK, it's a simple app running locally
     "SIM117", #	multiple-with-statements: contrary to its intention, can lead to unreadable code
     "D100",   # undocumented-public-module: too verbose
-    "D104"    # undocumented-public-package: too verbose
+    "D104",   # undocumented-public-package: too verbose
+    ### Deprecated rules
+    "ANN101",
+    "ANN102"
 ]

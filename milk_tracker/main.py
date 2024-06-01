@@ -1,17 +1,16 @@
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 import pandas as pd
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 from dotenv import load_dotenv
 from fastapi.responses import RedirectResponse
-from lib.auth_middleware import AuthMiddleware
-from lib.pandas_utils import append_series_to_df, prepend_series_to_df
-from lib.time_utils import is_time_format, timedelta_to_hrmin
+from middleware.auth import AuthMiddleware
 from nicegui import app, ui
+from utils.pandas_utils import append_series_to_df, prepend_series_to_df
+from utils.time_utils import is_time_format, timedelta_to_hrmin
 
 # Configuration
 ASSETS_DIR = "assets"
@@ -29,7 +28,7 @@ ph = PasswordHasher()
 
 
 @ui.page("/login")
-def login() -> Optional[RedirectResponse]:  # noqa: D103
+def login() -> None:  # noqa: D103
     def try_login() -> None:  # local function to avoid passing username and password as arguments
         if not os.environ["PASSWORD"]:
             ui.notify("Access deactivated", color="warning")
