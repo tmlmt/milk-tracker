@@ -17,16 +17,9 @@ from lib.pandas_utils import prepend_series_to_df, append_series_to_df
 ASSETS_DIR = "assets"
 FILE_NAME = "journal.xlsx"
 PLOTLY_DEFAULT_CONFIG = {
-    "modeBarButtonsToRemove": [
-        "zoom2d",
-        "pan2d",
-        "select2d",
-        "lasso2d",
-        "zoomIn2d",
-        "zoomOut2d"
-    ],
+    "modeBarButtonsToRemove": ["zoom2d", "pan2d", "select2d", "lasso2d", "zoomIn2d", "zoomOut2d"],
     # will always be true in plotly v3
-    "responsive": True
+    "responsive": True,
 }
 load_dotenv()
 
@@ -428,9 +421,9 @@ def main_page() -> None:
                     "title": yaxis_title,
                     "range": [-max_y * 0.05, max_y * 1.05],
                 },
-                "dragmode": False
+                "dragmode": False,
             },
-            "config": PLOTLY_DEFAULT_CONFIG
+            "config": PLOTLY_DEFAULT_CONFIG,
         }
 
         return fig
