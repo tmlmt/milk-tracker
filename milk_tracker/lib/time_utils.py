@@ -4,13 +4,13 @@ from datetime import datetime
 
 
 def timedelta_to_hrmin(td: pd.Timedelta) -> str:
-    """Converts a Pandas timedelta to a "X h Y min" or "X min" notation
+    """Converts a Pandas timedelta to a "HHhMMm" or "MMm" notation
 
     Args:
         td (pd.Timestamp): The timestamp to convert
 
     Returns:
-        str: "X h Y min" if > 1 hr, or "Y min" otherwise
+        str: "MMhMMm" if > 1 hr, or "MMm" otherwise
     """
     # NaN can't be converted
     if np.isnan(td.total_seconds()):
@@ -18,7 +18,7 @@ def timedelta_to_hrmin(td: pd.Timedelta) -> str:
     total_minutes = int(td.total_seconds() // 60)
     hours = total_minutes // 60
     minutes = total_minutes % 60
-    return f"{hours} h {minutes} min" if hours > 0 else f"{minutes} min"
+    return f"{hours}h{minutes:02d}m" if hours > 0 else f"{minutes}m"
 
 
 def is_time_format(time_string: str, time_formats: list[str] = ["%H:%M"]) -> bool:

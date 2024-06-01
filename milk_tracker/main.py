@@ -244,24 +244,24 @@ def main_page() -> None:
             ui.separator()
             ui.markdown().bind_content_from(globals(), "latest_meal_info")
         with ui.card():
-            ui.markdown("##### Time since latest end")
+            ui.markdown("##### Current time")
+            ui.separator()
+            with ui.card_section().classes("h-full content-center"):
+                ui.label().bind_text_from(globals(), "current_time").classes("text-3xl")
+        with ui.card():
+            ui.markdown("##### Latest end")
             ui.separator()
             with ui.card_section().classes("h-full content-center"):
                 ui.label().bind_text_from(
                     globals(), "time_since_latest_end", backward=timedelta_to_hrmin
                 ).classes("text-3xl")
         with ui.card():
-            ui.markdown("##### Time since latest start")
+            ui.markdown("##### Latest start")
             ui.separator()
-            with ui.card_section().classes("h-full content-center"):
+            with ui.card_section().classes("h-full content-center px-2"):
                 ui.label().bind_text_from(
                     globals(), "time_since_latest_start", backward=timedelta_to_hrmin
                 ).classes("text-3xl")
-        with ui.card():
-            ui.markdown("##### Current time")
-            ui.separator()
-            with ui.card_section().classes("h-full content-center"):
-                ui.label().bind_text_from(globals(), "current_time").classes("text-3xl")
 
     ui.markdown("## New meal")
 
@@ -345,7 +345,7 @@ def main_page() -> None:
                 value=app.storage.general.get("newmeal_is_locked", False),
                 on_change=toggle_newmeal_lock,
             )
-            .props("icon='lock_clock'")
+            .props("icon='lock_clock' size='lg'")
             .bind_value(app.storage.general, "newmeal_is_locked")
         )
 
@@ -430,30 +430,38 @@ def main_page() -> None:
 
         "Duration as a Function of Start Time for the Latest Three Dates"
 
-    figure_duration = ui.plotly(
-        generate_graph(
-            df,
-            "duration_min",
-            "Duration as a Function of Start Time for the Latest Three Dates",
-            "Duration (min)",
-        )
-    )
-    figure_time_since_previous_start = ui.plotly(
-        generate_graph(
-            df,
-            "time_since_previous_start_hrs",
-            "Time interval since previous start of meal",
-            "Time interval (hrs)",
-        )
-    )
-    figure_time_since_previous_end = ui.plotly(
-        generate_graph(
-            df,
-            "time_since_previous_end_hrs",
-            "Time interval since previous end of meal",
-            "Time interval (hrs)",
-        )
-    )
+    with ui.tabs() as tabs:
+        ui.tab("duration", label="Duration")
+        ui.tab("latest_start", label="Time since latest START")
+        ui.tab("latest_end", label="Time since latest END")
+    with ui.tab_panels(tabs, value="latest_end").classes("w-3xl"):
+        with ui.tab_panel("duration"):
+            figure_duration = ui.plotly(
+                generate_graph(
+                    df,
+                    "duration_min",
+                    "Duration as a Function of Start Time for the Latest Three Dates",
+                    "Duration (min)",
+                )
+            )
+        with ui.tab_panel("latest_start"):
+            figure_time_since_previous_start = ui.plotly(
+                generate_graph(
+                    df,
+                    "time_since_previous_start_hrs",
+                    "Time interval since previous start of meal",
+                    "Time interval (hrs)",
+                )
+            )
+        with ui.tab_panel("latest_end"):
+            figure_time_since_previous_end = ui.plotly(
+                generate_graph(
+                    df,
+                    "time_since_previous_end_hrs",
+                    "Time interval since previous end of meal",
+                    "Time interval (hrs)",
+                )
+            )
 
     ui.markdown("## Statistics")
 
