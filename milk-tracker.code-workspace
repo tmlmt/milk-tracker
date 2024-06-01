@@ -9,6 +9,11 @@
     "editor.defaultFormatter": "charliermarsh.ruff",
     "editor.formatOnSave": true,
     "editor.detectIndentation": false,
-    "editor.indentSize": 4
+    "editor.indentSize": 4,
+    "[python]": {
+      "editor.codeActionsOnSave": {
+        "source.organizeImports.ruff": "explicit"
+      }
+    }
   }
 }

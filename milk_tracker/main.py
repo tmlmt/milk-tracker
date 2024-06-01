@@ -1,17 +1,16 @@
+import os
+from datetime import datetime
 from typing import Optional
 
+import pandas as pd
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
-from fastapi.responses import RedirectResponse
-from nicegui import app, ui
-from datetime import datetime
 from dotenv import load_dotenv
-import pandas as pd
-import os
-
+from fastapi.responses import RedirectResponse
 from lib.auth_middleware import AuthMiddleware
-from lib.time_utils import timedelta_to_hrmin, is_time_format
-from lib.pandas_utils import prepend_series_to_df, append_series_to_df
+from lib.pandas_utils import append_series_to_df, prepend_series_to_df
+from lib.time_utils import is_time_format, timedelta_to_hrmin
+from nicegui import app, ui
 
 # Configuration
 ASSETS_DIR = "assets"
