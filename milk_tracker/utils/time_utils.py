@@ -32,7 +32,7 @@ def is_time_format(time_string: str, time_formats: Optional[list[str]] = None) -
     Args:
     ----
         time_string (str): string to test
-        time_formats (_type_, optional): time formats to test. Defaults to ["%H:%M"].
+        time_formats (List[str], optional): time formats to test. Defaults to ["%H:%M"].
 
     Returns:
     -------
@@ -40,7 +40,7 @@ def is_time_format(time_string: str, time_formats: Optional[list[str]] = None) -
 
     """
     if time_formats is None:
-        time_format = ["%H:%M"]
+        time_formats = ["%H:%M"]
     try:
         for time_format in time_formats:
             # Attempt to parse the string using each specified time format
