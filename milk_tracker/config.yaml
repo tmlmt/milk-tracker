@@ -1,0 +1,5 @@
+# See schemas/config.py for details
+ASSETS_DIR: "assets"
+DATA_FILE_NAME: "journal.xlsx"
+PLOTLY_DEFAULT_CONFIG:
+    modeBarButtonsToRemove: ["zoom2d", "pan2d", "select2d", "lasso2d", "zoomIn2d", "zoomOut2d"]

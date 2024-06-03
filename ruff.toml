@@ -13,6 +13,8 @@ ignore = [
     "SIM117", #	multiple-with-statements: contrary to its intention, can lead to unreadable code
     "D100",   # undocumented-public-module: too verbose
     "D104",   # undocumented-public-package: too verbose
+    "PTH123", # builtin-open: I find Path().open() less intuitive to read
+    "TRY003", # raise-vanilla-args: I want to specify any error message I like
     ### Deprecated rules
     "ANN101",
     "ANN102"

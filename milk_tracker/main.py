@@ -1,33 +1,25 @@
-import os
-from datetime import datetime
 from pathlib import Path
 from typing import Union
 
 import pandas as pd
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
-from dotenv import load_dotenv
+from controllers.app import AppController
 from fastapi.responses import RedirectResponse
+from middleware.auth import AuthMiddleware
 from nicegui import app, ui
-
-from .middleware.auth import AuthMiddleware
-from .utils.pandas_utils import append_series_to_df, prepend_series_to_df
-from .utils.time_utils import is_time_format, timedelta_to_hrmin
+from nicegui.events import ValueChangeEventArguments
+from utils.time_utils import get_current_date, get_current_time, is_time_format, timedelta_to_hrmin
 
 # Configuration
-ASSETS_DIR = "assets"
-FILE_NAME = "journal.xlsx"
-PLOTLY_DEFAULT_CONFIG = {
-    "modeBarButtonsToRemove": ["zoom2d", "pan2d", "select2d", "lasso2d", "zoomIn2d", "zoomOut2d"],
-    # will always be true in plotly v3
-    "responsive": True,
-}
-load_dotenv()
+CONFIG_FILE = Path("config.yaml")
+
+# Milk Tracker overall controller
+mt = AppController(CONFIG_FILE)
 
 # Authorization
 app.add_middleware(AuthMiddleware)
 ph = PasswordHasher()
-
 
 # Declaration
 current_time = None
@@ -39,11 +31,11 @@ latest_meal_info = None
 @ui.page("/login")
 def login() -> Union[None, RedirectResponse]:  # noqa: D103
     def try_login() -> None:  # local function to avoid passing username and password as arguments
-        if not os.environ["PASSWORD"]:
+        if not mt.env["PASSWORD"]:
             ui.notify("Access deactivated", color="warning")
         else:
             try:
-                ph.verify(os.environ["PASSWORD"], password_input.value)
+                ph.verify(mt.env["PASSWORD"], password_input.value)
                 app.storage.user.update({"authenticated": True})
                 ui.notify("Welcome back!", color="positive")
                 ui.navigate.to(
@@ -81,103 +73,19 @@ def login() -> Union[None, RedirectResponse]:  # noqa: D103
 
 @ui.page("/")
 def main_page() -> None:  # noqa: D103
-    global current_time, time_since_latest_end, time_since_latest_start, latest_meal_info
+    mt.load_data()
 
-    df = pd.read_excel(Path(ASSETS_DIR) / FILE_NAME)
-
-    # -- Clean dataset
-    # When there's no end_time, make it equal to start time
-    df.loc[df["end_time"] == "?", "end_time"] = df["start_time"]
-    # Turn date and time columns to datetime
-    df["date"] = pd.to_datetime(df["date"])
-
-    def compute_columns(df: pd.DataFrame) -> pd.DataFrame:
-        # Combine 'Date' and 'Time' into a single datetime column
-        # Convert to string first and combine, to circumvent errors in converting excel format to datetime
-        df["start_datetime"] = df.apply(
-            lambda row: pd.to_datetime(str(row["date"].date()) + " " + str(row["start_time"])),
-            axis=1,
-        )
-        df["end_datetime"] = df.apply(
-            lambda row: pd.to_datetime(str(row["date"].date()) + " " + str(row["end_time"])),
-            axis=1,
-        )
-
-        df.loc[df["end_datetime"] < df["start_datetime"], "end_datetime"] += pd.Timedelta(days=1)
-
-        # Calculate duration
-        df["duration"] = df["end_datetime"] - df["start_datetime"]
-        df["duration_hrmin"] = df["duration"].apply(timedelta_to_hrmin)
-        df["duration_min"] = round(df["duration"].dt.total_seconds() / 60, 2)
-
-        # Calculate other things of interest
-        df["previous_end_datetime"] = df["end_datetime"].shift(1)
-        df["time_since_previous_start"] = df["start_datetime"].diff()
-        df["time_since_previous_start_hrmin"] = df["time_since_previous_start"].apply(
-            timedelta_to_hrmin
-        )
-        df["time_since_previous_start_hrs"] = round(
-            df["time_since_previous_start"].dt.total_seconds() / 3600, 2
-        )
-
-        df["time_since_previous_end"] = df["start_datetime"] - df["previous_end_datetime"]
-        df["time_since_previous_end_hrmin"] = df["time_since_previous_end"].apply(
-            timedelta_to_hrmin
-        )
-        df["time_since_previous_end_hrs"] = round(
-            df["time_since_previous_end"].dt.total_seconds() / 3600, 2
-        )
-
-        return df
-
-    df = compute_columns(df)
-
-    def get_time_since_latest_end() -> pd.Timestamp:
-        return pd.Timestamp.now() - df.iloc[-1]["end_datetime"]
-
-    def get_time_since_latest_start() -> pd.Timestamp:
-        return pd.Timestamp.now() - df.iloc[-1]["start_datetime"]
-
-    def get_latest_meal_info() -> str:
-        return f"""\
-        Date: {df.iloc[-1]["date"].date()}<br />
-        Start time: {df.iloc[-1]["start_time"]}<br />
-        End time: {df.iloc[-1]["end_time"]}<br />
-        Duration: {df.iloc[-1]["duration_hrmin"]}
-        """
-
-    def get_current_time(include_sec=True) -> str:
-        return f"{datetime.now():%X}" if include_sec else f"{datetime.now():%H:%M}"
-
-    def get_current_date() -> str:
-        return datetime.now().date().strftime("%Y-%m-%d")
-
-    # Dynamic labels and markdown
-    time_since_latest_end = get_time_since_latest_end()
-    time_since_latest_start = get_time_since_latest_start()
-    latest_meal_info = get_latest_meal_info()
-    current_time = f"{datetime.now():%X}"
-
-    def continuous_update(*, force_all: bool = False) -> None:
-        global current_time, time_since_latest_end, time_since_latest_start
-        current_time = get_current_time()
-        if current_time[-2:] == "00" or force_all:
-            time_since_latest_end = get_time_since_latest_end()
-            time_since_latest_start = get_time_since_latest_start()
-
-    def force_update(df: pd.DataFrame) -> None:
-        global latest_meal_info, table_latest_meals
-        continuous_update(force_all=True)
-        latest_meal_info = get_latest_meal_info()
+    def force_update() -> None:
+        mt.do_continuous_update(force_all=True)
+        mt.compute_latest_meal_info()
         table_latest_meals_container.clear()
         with table_latest_meals_container:
-            generate_latest_meals_table(df)
+            generate_latest_meals_table()
         table_summary_container.clear()
         with table_summary_container:
-            generate_summary_table(df)
+            generate_summary_table()
         figure_duration.update_figure(
             generate_graph(
-                df,
                 "duration_min",
                 "Duration as a Function of Start Time for the Latest Three Dates",
                 "Duration (min)",
@@ -185,7 +93,6 @@ def main_page() -> None:  # noqa: D103
         )
         figure_time_since_previous_start.update_figure(
             generate_graph(
-                df,
                 "time_since_previous_start_hrs",
                 "Time interval since previous start of meal",
                 "Time interval (hrs)",
@@ -193,18 +100,17 @@ def main_page() -> None:  # noqa: D103
         )
         figure_time_since_previous_end.update_figure(
             generate_graph(
-                df,
                 "time_since_previous_end_hrs",
                 "Time interval since previous end of meal",
                 "Time interval (hrs)",
             )
         )
 
-    ui.timer(1.0, continuous_update)
+    ui.timer(1.0, mt.do_continuous_update)
 
     # Add new entry
 
-    def add_entry(df: pd.DataFrame, date, start_time, end_time) -> bool:
+    def add_entry(date: str, start_time: str, end_time: str) -> bool:
         # Validation
         if not end_time or not date or not start_time:
             ui.notify("All fields must be filled in", type="negative")
@@ -213,35 +119,18 @@ def main_page() -> None:  # noqa: D103
             ui.notify("Times must be given in HH:MM format", type="negative")
             return False
         # Creating the new entry
-        new_entry = pd.DataFrame(
-            [
-                {
-                    "date": pd.to_datetime(date),
-                    "start_time": str(pd.to_datetime(start_time).time()),
-                    "end_time": str(pd.to_datetime(end_time).time()),
-                }
-            ]
-        )
-        # To compute all columns, we also need the previous meal
-        new_entry = compute_columns(
-            pd.concat([df.iloc[[-1]][["date", "start_time", "end_time"]], new_entry])
-        ).iloc[[-1]]
-        # Merging and saving to file
-        df = pd.concat([df, new_entry])
-        save_to_file(df, Path(ASSETS_DIR) / FILE_NAME)
+        mt.meals.add(date, start_time, end_time)
+        mt.meals.save_to_file()
         # Clearing inputs
         new_end_time.set_value("")
         new_start_time.set_value(get_current_time(include_sec=False))
         switch_lock_start_time.set_value(False)
         new_date.set_value(get_current_date())
         # Updating UI
-        force_update(df)
+        force_update()
         # Success message
         ui.notify("Meal added to history", type="positive")
         return True
-
-    def save_to_file(df: pd.DataFrame, file_path: Path) -> None:
-        df[["date", "start_time", "end_time"]].to_excel(file_path, index=False)
 
     ui.markdown("# Milk Tracker")
 
@@ -251,25 +140,25 @@ def main_page() -> None:  # noqa: D103
         with ui.card():
             ui.markdown("##### Latest meal")
             ui.separator()
-            ui.markdown().bind_content_from(globals(), "latest_meal_info")
+            ui.markdown().bind_content_from(mt.computed, "latest_meal_info")
         with ui.card():
             ui.markdown("##### Current time")
             ui.separator()
             with ui.card_section().classes("h-full content-center"):
-                ui.label().bind_text_from(globals(), "current_time").classes("text-3xl")
+                ui.label().bind_text_from(mt.computed, "current_time").classes("text-3xl")
         with ui.card():
             ui.markdown("##### Latest end")
             ui.separator()
             with ui.card_section().classes("h-full content-center"):
                 ui.label().bind_text_from(
-                    globals(), "time_since_latest_end", backward=timedelta_to_hrmin
+                    mt.computed, "time_since_latest_end", backward=timedelta_to_hrmin
                 ).classes("text-3xl")
         with ui.card():
             ui.markdown("##### Latest start")
             ui.separator()
             with ui.card_section().classes("h-full content-center px-2"):
                 ui.label().bind_text_from(
-                    globals(), "time_since_latest_start", backward=timedelta_to_hrmin
+                    mt.computed, "time_since_latest_start", backward=timedelta_to_hrmin
                 ).classes("text-3xl")
 
     ui.markdown("## New meal")
@@ -304,7 +193,8 @@ def main_page() -> None:  # noqa: D103
                 ).bind_enabled_from(
                     app.storage.general, "newmeal_is_locked", backward=lambda x: not x
                 ).props(
-                    "mask='time' :rules='[ (val, rules) => rules.time(val) || \"Invalid time\"]' lazy-rules"
+                    "mask='time' :rules='[ (val, rules) => rules.time(val) || \"Invalid time\"]'"
+                    "lazy-rules"
                 ).classes("w-24") as new_start_time:
                     with ui.menu().props("no-parent-event") as menu_new_start_time:
                         with ui.time().props("format24h").bind_value(new_start_time):
@@ -322,7 +212,8 @@ def main_page() -> None:  # noqa: D103
                     on_click=lambda: new_end_time.set_value(get_current_time(include_sec=False)),
                 ).classes("h-full")
                 with ui.input().props(
-                    "mask='time' :rules='[ (val, rules) => rules.time(val) || \"Invalid time\"]' lazy-rules"
+                    "mask='time' :rules='[ (val, rules) => rules.time(val) || \"Invalid time\"]'"
+                    "lazy-rules"
                 ).classes("w-24") as new_end_time:
                     with ui.menu().props("no-parent-event") as menu_new_end_time:
                         with ui.time().props("format24h").bind_value(new_end_time):
@@ -336,11 +227,11 @@ def main_page() -> None:  # noqa: D103
             ui.button(
                 "Add",
                 on_click=lambda: add_entry(
-                    df, new_date.value, new_start_time.value, new_end_time.value
+                    new_date.value, new_start_time.value, new_end_time.value
                 ),
             ).classes("h-20 w-20")
 
-    def toggle_newmeal_lock(e) -> None:
+    def toggle_newmeal_lock(e: ValueChangeEventArguments) -> None:
         if e.value:
             if not new_start_time.value or len(new_start_time.value) != 5:
                 new_start_time.set_value(get_current_time(include_sec=False))
@@ -362,9 +253,9 @@ def main_page() -> None:  # noqa: D103
 
     ui.markdown("## 10 last meals")
 
-    def generate_latest_meals_table(df) -> ui.table:
+    def generate_latest_meals_table() -> ui.table:
         return ui.table.from_pandas(
-            df.tail(10)[
+            mt.meals.df.tail(10)[
                 [
                     "date",
                     "start_time",
@@ -388,31 +279,30 @@ def main_page() -> None:  # noqa: D103
         )
 
     with ui.element() as table_latest_meals_container:
-        generate_latest_meals_table(df)
+        generate_latest_meals_table()
 
-    def delete_latest_meal(df) -> None:
-        # Merging and saving to file
-        df = df.drop(df.tail(1).index)
-        save_to_file(df, Path(ASSETS_DIR) / FILE_NAME)
+    def delete_latest_meal() -> None:
+        mt.meals.delete_latest()
+        mt.meals.save_to_file()
         # Updating UI
-        force_update(df)
+        force_update()
         # Success message
         ui.notify("Latest meal removed from history", type="positive")
 
-    ui.button("Delete last meal", on_click=lambda: delete_latest_meal(df), color="negative")
+    ui.button("Delete last meal", on_click=delete_latest_meal, color="negative")
 
     ui.markdown("## Graphs")
 
-    def generate_graph(df, field: str, title: str, yaxis_title: str) -> dict:
+    def generate_graph(field: str, title: str, yaxis_title: str) -> dict:
         # Get the three latest dates
-        latest_dates = df["date"].drop_duplicates().nlargest(3)
+        latest_dates = mt.meals.df["date"].drop_duplicates().nlargest(3)
 
-        data = []
+        graph_data = []
         for _, date in enumerate(
             latest_dates
         ):  # TODO @tmlmt: check whether I can loop directly instead of enumerate
-            date_data = df[df["date"] == date]
-            data.append(
+            date_data = mt.meals.df[mt.meals.df["date"] == date]
+            graph_data.append(
                 {
                     "type": "scatter",
                     "name": str(date.date()),
@@ -425,10 +315,10 @@ def main_page() -> None:  # noqa: D103
                 }
             )
 
-        max_y = max(df[df["date"].isin(latest_dates)][field])
+        max_y = max(mt.meals.df[mt.meals.df["date"].isin(latest_dates)][field])
 
         return {
-            "data": data,
+            "data": graph_data,
             "layout": {
                 "title": title,
                 "xaxis": {"title": "Start Time", "tickformat": "%Hh%M"},
@@ -438,7 +328,7 @@ def main_page() -> None:  # noqa: D103
                 },
                 "dragmode": False,
             },
-            "config": PLOTLY_DEFAULT_CONFIG,
+            "config": mt.config.PLOTLY_DEFAULT_CONFIG,
         }
 
     with ui.tabs() as tabs:
@@ -449,7 +339,6 @@ def main_page() -> None:  # noqa: D103
         with ui.tab_panel("duration"):
             figure_duration = ui.plotly(
                 generate_graph(
-                    df,
                     "duration_min",
                     "Duration as a Function of Start Time for the Latest Three Dates",
                     "Duration (min)",
@@ -458,7 +347,6 @@ def main_page() -> None:  # noqa: D103
         with ui.tab_panel("latest_start"):
             figure_time_since_previous_start = ui.plotly(
                 generate_graph(
-                    df,
                     "time_since_previous_start_hrs",
                     "Time interval since previous start of meal",
                     "Time interval (hrs)",
@@ -467,7 +355,6 @@ def main_page() -> None:  # noqa: D103
         with ui.tab_panel("latest_end"):
             figure_time_since_previous_end = ui.plotly(
                 generate_graph(
-                    df,
                     "time_since_previous_end_hrs",
                     "Time interval since previous end of meal",
                     "Time interval (hrs)",
@@ -476,9 +363,9 @@ def main_page() -> None:  # noqa: D103
 
     ui.markdown("## Statistics")
 
-    def generate_summary_table(df: pd.DataFrame) -> ui.table:
+    def generate_summary_table() -> ui.table:
         summary_df: pd.DataFrame = (
-            df.groupby("date")
+            mt.meals.df.groupby("date")
             .agg(
                 number_of_rows=pd.NamedAgg(column="date", aggfunc="count"),
                 average=pd.NamedAgg(column="duration", aggfunc="mean"),
@@ -511,7 +398,7 @@ def main_page() -> None:  # noqa: D103
 
     # Display the summary DataFrame
     with ui.element() as table_summary_container:
-        generate_summary_table(df)
+        generate_summary_table()
 
 
 # Common parameters for ui.run
@@ -519,16 +406,16 @@ run_params = {
     "port": 6520,
     "show": False,
     "title": "Milk Tracker",
-    "storage_secret": os.environ["STORAGE_SECRET"],
+    "storage_secret": mt.env["STORAGE_SECRET"],
 }
 
 # Run in HTTPS if a certificate is given in the .env file
 if (
-    all(s in os.environ for s in ["SSL_ENABLED", "SSL_KEYFILE", "SSL_CERTFILE"])
-    and os.environ["SSL_ENABLED"] == "True"
+    all(s in mt.env for s in ["SSL_ENABLED", "SSL_KEYFILE", "SSL_CERTFILE"])
+    and mt.env["SSL_ENABLED"] == "True"
 ):
     run_params.update(
-        {"ssl_certfile": os.environ["SSL_CERTFILE"], "ssl_keyfile": os.environ["SSL_KEYFILE"]}
+        {"ssl_certfile": mt.env["SSL_CERTFILE"], "ssl_keyfile": mt.env["SSL_KEYFILE"]}
     )
 
-ui.run(**run_params)  # type: ignore
+ui.run(**run_params)  # type: ignore[arg-type]

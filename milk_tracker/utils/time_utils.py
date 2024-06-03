@@ -49,3 +49,32 @@ def is_time_format(time_string: str, time_formats: Optional[list[str]] = None) -
         return False
 
     return True
+
+
+def get_current_time(*, include_sec: bool = True) -> str:
+    """Return current time.
+
+    Parameters
+    ----------
+    include_sec : bool, optional
+        whether to include seconds, by default True
+
+    Returns
+    -------
+    str
+        Current time in HH:MM or HH:MM:SS format
+
+    """
+    return f"{datetime.now():%X}" if include_sec else f"{datetime.now():%H:%M}"
+
+
+def get_current_date() -> str:
+    """Return current date.
+
+    Returns
+    -------
+    str
+        Current date in YYYY-MM-DD format
+
+    """
+    return datetime.now().date().strftime("%Y-%m-%d")
