@@ -1,6 +1,9 @@
 # Allow lines to be as long as 100.
 line-length = 100
 
+# milk_tracker is intended as a package
+namespace-packages = ["milk_tracker"]
+
 [lint]
 # Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
 # Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
