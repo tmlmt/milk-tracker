@@ -1,5 +1,6 @@
+import re
 from datetime import datetime
-from typing import Optional
+from typing import List, Literal, Optional
 
 import numpy as np
 import pandas as pd
@@ -26,29 +27,58 @@ def timedelta_to_hrmin(td: pd.Timedelta) -> str:
     return f"{hours}h{minutes:02d}m" if hours > 0 else f"{minutes}m"
 
 
-def is_time_format(time_string: str, time_formats: Optional[list[str]] = None) -> bool:
+def is_time_format(
+    test_string: str, time_format: Optional[Literal["short", "full", "any"]] = "any"
+) -> bool:
     """Test whether a string corresponds to a time.
 
-    Args:
-    ----
-        time_string (str): string to test
-        time_formats (List[str], optional): time formats to test. Defaults to ["%H:%M"].
+    Parameters
+    ----------
+    test_string : str
+        String to test
+    time_format : Optional[Literal["short", "full", "any"]], optional
+        _description_, by default "short"
 
-    Returns:
+    Returns
     -------
-        bool: result of the test
+    bool
+        Test result
 
     """
-    if time_formats is None:
-        time_formats = ["%H:%M"]
-    try:
-        for time_format in time_formats:
-            # Attempt to parse the string using each specified time format
-            datetime.strptime(time_string, time_format)
-    except ValueError:
-        return False
+    if time_format in ["short", "any"] and re.match(r"([01]\d|2[0-3]):([0-5]\d)$", test_string):
+        return True
+    if time_format in ["full", "any"] and re.match(
+        r"([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$", test_string
+    ):
+        return True
+    return False
 
-    return True
+
+def force_full_time(time_string: str) -> str:
+    """Force a time string in full format HH:mm:ss with 00 at the end.
+
+    Parameters
+    ----------
+    time_string : str
+        Input string
+
+    Returns
+    -------
+    str
+        Time string in full format
+
+    Raises
+    ------
+    TypeError
+        If input string not a valid time format
+
+    """
+    if not is_time_format(time_string):
+        msg = "Input string must be a valid time format"
+        raise TypeError(msg)
+    if len(time_string) == 5:  # noqa: PLR2004
+        return time_string + ":00"
+    return time_string
 
 
 def get_current_time(*, include_sec: bool = True) -> str:
