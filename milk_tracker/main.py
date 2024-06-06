@@ -394,7 +394,7 @@ def main_page() -> None:  # noqa: D103
                 "max": "Maximum duration",
                 "sum": "Cumulative duration",
             }
-        )
+        ).iloc[::-1]
 
         return ui.table.from_pandas(summary_df)
 
