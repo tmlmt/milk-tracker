@@ -1,11 +1,13 @@
 from datetime import timedelta
 
-from pydantic import BaseModel, Field, StringConstraints
+from pydantic import Field, StringConstraints
 from typing_extensions import Annotated
 from utils.time_utils import get_current_time
 
+from .base import UpdatableBaseModel
 
-class ComputedValues(BaseModel):
+
+class ComputedValues(UpdatableBaseModel):
     """All computed values."""
 
     current_time: Annotated[str, StringConstraints(pattern=r"^\d{2}:\d{2}:\d{2}$")] = Field(
@@ -23,4 +25,8 @@ class ComputedValues(BaseModel):
     latest_meal_info: str = Field(
         default="No info",
         description="Latest meal information"
+    )  # fmt: skip
+    is_ongoing_meal: bool = Field(
+        default=False,
+        description="Lock state for input field of start of new meal"
     )  # fmt: skip

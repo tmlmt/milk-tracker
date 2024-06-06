@@ -9,7 +9,9 @@ from fastapi.responses import RedirectResponse
 from middleware.auth import AuthMiddleware
 from nicegui import app, ui
 from nicegui.events import ValueChangeEventArguments
-from utils.time_utils import get_current_date, get_current_time, is_time_format, timedelta_to_hrmin
+from pydantic import ValidationError
+from schemas.meal import FinishedMeal
+from utils.time_utils import get_current_date, get_current_time, timedelta_to_hrmin
 
 # Configuration
 CONFIG_FILE = Path("config.yaml")
@@ -75,9 +77,7 @@ def login() -> Union[None, RedirectResponse]:  # noqa: D103
 def main_page() -> None:  # noqa: D103
     mt.load_data()
 
-    def force_update() -> None:
-        mt.do_continuous_update(force_all=True)
-        mt.compute_latest_meal_info()
+    def force_update_view() -> None:
         table_latest_meals_container.clear()
         with table_latest_meals_container:
             generate_latest_meals_table()
@@ -110,24 +110,20 @@ def main_page() -> None:  # noqa: D103
 
     # Add new entry
 
-    def add_entry(date: str, start_time: str, end_time: str) -> bool:
+    def add_finished_meal(date: str, start_time: str, end_time: str) -> bool:
         # Validation
-        if not end_time or not date or not start_time:
-            ui.notify("All fields must be filled in", type="negative")
+        try:
+            mt.add_finished_meal(date=date, start_time=start_time, end_time=end_time)
+        except ValidationError:
+            ui.notify("Invalid meal data: check all fields")
             return False
-        if not is_time_format(start_time) or not is_time_format(end_time):
-            ui.notify("Times must be given in HH:MM format", type="negative")
-            return False
-        # Creating the new entry
-        mt.meals.add(date, start_time, end_time)
-        mt.meals.save_to_file()
         # Clearing inputs
         new_end_time.set_value("")
         new_start_time.set_value(get_current_time(include_sec=False))
         switch_lock_start_time.set_value(False)
         new_date.set_value(get_current_date())
         # Updating UI
-        force_update()
+        force_update_view()
         # Success message
         ui.notify("Meal added to history", type="positive")
         return True
@@ -147,14 +143,14 @@ def main_page() -> None:  # noqa: D103
             with ui.card_section().classes("h-full content-center"):
                 ui.label().bind_text_from(mt.computed, "current_time").classes("text-3xl")
         with ui.card():
-            ui.markdown("##### Latest end")
+            ui.markdown("##### Previous end")
             ui.separator()
             with ui.card_section().classes("h-full content-center"):
                 ui.label().bind_text_from(
                     mt.computed, "time_since_latest_end", backward=timedelta_to_hrmin
                 ).classes("text-3xl")
         with ui.card():
-            ui.markdown("##### Latest start")
+            ui.markdown("##### Previous start")
             ui.separator()
             with ui.card_section().classes("h-full content-center px-2"):
                 ui.label().bind_text_from(
@@ -184,16 +180,12 @@ def main_page() -> None:  # noqa: D103
                     "Now",
                     on_click=lambda: new_start_time.set_value(get_current_time(include_sec=False)),
                 ).bind_enabled_from(
-                    app.storage.general, "newmeal_is_locked", backward=lambda x: not x
+                    mt.computed, "is_ongoing_meal", backward=lambda x: not x
                 ).classes("h-full")
                 with ui.input(
-                    value=app.storage.general.get(
-                        "newmeal_start_time", get_current_time(include_sec=False)
-                    )
-                ).bind_enabled_from(
-                    app.storage.general, "newmeal_is_locked", backward=lambda x: not x
-                ).props(
-                    "mask='time' :rules='[ (val, rules) => rules.time(val) || \"Invalid time\"]'"
+                    value=mt.get_input_default_value_newmeal_start_time()
+                ).bind_enabled_from(mt.computed, "is_ongoing_meal", backward=lambda x: not x).props(
+                    "mask='time' :rules='[ (val, rules) => rules.time(val) || \"Invalid time\"]' "
                     "lazy-rules"
                 ).classes("w-24") as new_start_time:
                     with ui.menu().props("no-parent-event") as menu_new_start_time:
@@ -212,7 +204,7 @@ def main_page() -> None:  # noqa: D103
                     on_click=lambda: new_end_time.set_value(get_current_time(include_sec=False)),
                 ).classes("h-full")
                 with ui.input().props(
-                    "mask='time' :rules='[ (val, rules) => rules.time(val) || \"Invalid time\"]'"
+                    "mask='time' :rules='[ (val, rules) => rules.time(val) || \"Invalid time\"]' "
                     "lazy-rules"
                 ).classes("w-24") as new_end_time:
                     with ui.menu().props("no-parent-event") as menu_new_end_time:
@@ -226,29 +218,36 @@ def main_page() -> None:  # noqa: D103
         with ui.column().classes("justify-end"):
             ui.button(
                 "Add",
-                on_click=lambda: add_entry(
+                on_click=lambda: add_finished_meal(
                     new_date.value, new_start_time.value, new_end_time.value
                 ),
             ).classes("h-20 w-20")
 
     def toggle_newmeal_lock(e: ValueChangeEventArguments) -> None:
         if e.value:
-            if not new_start_time.value or len(new_start_time.value) != 5:
+            # Try to fix start time before trying to start new meal
+            if not new_start_time.value or len(new_start_time.value) != 5:  # noqa: PLR2004
                 new_start_time.set_value(get_current_time(include_sec=False))
-            app.storage.general.update({"newmeal_start_time": new_start_time.value})
+            try:
+                mt.start_new_meal(date=new_date.value, start_time=new_start_time.value)
+            except ValidationError:
+                ui.notify("Please check date and start time before locking the meal")
+                return
+            force_update_view()
         else:
-            app.storage.general.pop("newmeal_start_time")
+            mt.cancel_ongoing_meal()
+            force_update_view()
 
     with ui.column():
         ui.markdown("##### Record meal")
         switch_lock_start_time = (
             ui.switch(
                 "Lock start time",
-                value=app.storage.general.get("newmeal_is_locked", False),
+                value=mt.computed.is_ongoing_meal,
                 on_change=toggle_newmeal_lock,
             )
             .props("icon='lock_clock' size='lg'")
-            .bind_value(app.storage.general, "newmeal_is_locked")
+            .bind_value_from(mt.computed, "is_ongoing_meal")
         )
 
     ui.markdown("## 10 last meals")
@@ -282,11 +281,8 @@ def main_page() -> None:  # noqa: D103
         generate_latest_meals_table()
 
     def delete_latest_meal() -> None:
-        mt.meals.delete_latest()
-        mt.meals.save_to_file()
-        # Updating UI
-        force_update()
-        # Success message
+        mt.delete_latest_meal()
+        force_update_view()
         ui.notify("Latest meal removed from history", type="positive")
 
     ui.button("Delete last meal", on_click=delete_latest_meal, color="negative")
@@ -302,6 +298,12 @@ def main_page() -> None:  # noqa: D103
             latest_dates
         ):  # TODO @tmlmt: check whether I can loop directly instead of enumerate
             date_data = mt.meals.df[mt.meals.df["date"] == date]
+            date_data = date_data[
+                (date_data[field] != "")
+                & (date_data[field].notna())
+                & (date_data[field].astype(float) != 0)
+            ]
+
             graph_data.append(
                 {
                     "type": "scatter",
@@ -400,6 +402,8 @@ def main_page() -> None:  # noqa: D103
     with ui.element() as table_summary_container:
         generate_summary_table()
 
+
+# TODO @tmlmt: remove as not used in production
 
 # Common parameters for ui.run
 run_params = {
