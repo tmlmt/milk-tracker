@@ -1,0 +1,66 @@
+name: Coverage
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch_name:
+        description: "Branch name"
+        required: false
+        default: "main"
+      reference:
+        description: "Reference to add in run name"
+        required: false
+        default: "main branch"
+
+run-name: Coverage update for ${{ github.event.inputs.reference }}
+
+permissions: 
+  contents: write
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch_name }}
+
+      - name: Install micromamba and setup environment
+        uses: mamba-org/setup-micromamba@v1
+        with:
+            generate-run-shell: true
+            environment-file: env.yaml
+            cache-environment: true
+
+      - name: Run coverage
+        run: |
+          pytest --cov=milk_tracker milk_tracker/tests
+          coverage report -m
+        shell: micromamba-shell {0}
+
+      - name: Coverage Badge
+        uses: tj-actions/coverage-badge-py@v2
+        with:
+            output: coverage.svg
+
+      - name: Verify Changed files
+        uses: tj-actions/verify-changed-files@v16
+        id: verify-changed-files
+        with:
+          files: coverage.svg
+
+      - name: Commit files
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add coverage.svg
+          git commit -m "chore(coverage): update badge"
+
+      - name: Push changes
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.github_token }}
+          branch: ${{ github.event.inputs.branch_name }}
