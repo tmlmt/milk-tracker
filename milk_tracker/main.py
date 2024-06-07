@@ -1,7 +1,6 @@
 from pathlib import Path
 from typing import Union
 
-import pandas as pd
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 from controllers.app import AppController
@@ -10,7 +9,6 @@ from middleware.auth import AuthMiddleware
 from nicegui import app, ui
 from nicegui.events import ValueChangeEventArguments
 from pydantic import ValidationError
-from schemas.meal import FinishedMeal
 from utils.time_utils import get_current_date, get_current_time, timedelta_to_hrmin
 
 # Configuration
