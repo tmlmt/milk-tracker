@@ -250,6 +250,8 @@ def main_page() -> None:  # noqa: D103
 
     ui.markdown("## 10 last meals")
 
+    # TODO: move css to external file
+
     ui.add_sass("""
     .sticky-header-column-table
         /* height or max-height is important */
