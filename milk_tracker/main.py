@@ -341,9 +341,7 @@ def main_page() -> None:  # noqa: D103
         latest_dates = mt.meals.df["date"].drop_duplicates().nlargest(3)
 
         graph_data = []
-        for _, date in enumerate(
-            latest_dates
-        ):  # TODO @tmlmt: check whether I can loop directly instead of enumerate
+        for date in latest_dates:
             date_data = mt.meals.df[mt.meals.df["date"] == date]
             date_data = date_data[
                 (date_data[field] != "")
@@ -358,9 +356,9 @@ def main_page() -> None:  # noqa: D103
                     "mode": "markers+lines",
                     "x": [
                         "2024-05-08 " + t
-                        for t in date_data["start_time"].astype(str).values.tolist()
+                        for t in date_data["start_time"].astype(str).array.tolist()
                     ],
-                    "y": date_data[field].values.tolist(),
+                    "y": date_data[field].array.tolist(),
                 }
             )
 
