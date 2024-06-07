@@ -1,4 +1,6 @@
 # See schemas/config.py for details
+TITLE: "Milk Tracker"
+MAX_PASSWORD_ATTEMPTS: 3
 ASSETS_DIR: "assets"
 DATA_FILE_NAME: "journal.xlsx"
 PLOTLY_DEFAULT_CONFIG:

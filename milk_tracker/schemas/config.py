@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any, Dict
 
-from pydantic import BaseModel, DirectoryPath, Field, field_validator, model_validator
+from pydantic import BaseModel, DirectoryPath, Field, PositiveInt, field_validator, model_validator
 from typing_extensions import Self
 
 
@@ -13,6 +13,8 @@ class Config(BaseModel):
     PLOTLY_DEFAULT_CONFIG: Dict[str, Any] = Field(
         ..., description="Default config value for Plotly plots"
     )
+    TITLE: str = Field(..., description="Title of the app as it appears in the browser tab")
+    MAX_PASSWORD_ATTEMPTS: PositiveInt
 
     @field_validator("DATA_FILE_NAME")
     @classmethod

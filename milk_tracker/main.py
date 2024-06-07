@@ -45,7 +45,7 @@ def login() -> Union[None, RedirectResponse]:  # noqa: D103
                 app.storage.user.update(
                     {"failed_attempts": app.storage.user.get("failed_attempts", 0) + 1}
                 )
-                if app.storage.user.get("failed_attempts", 0) >= 3:
+                if app.storage.user.get("failed_attempts", 0) >= mt.config.MAX_PASSWORD_ATTEMPTS:
                     login_form.clear()
                     with login_form:
                         access_denied_label()
@@ -60,7 +60,7 @@ def login() -> Union[None, RedirectResponse]:  # noqa: D103
     if app.storage.user.get("authenticated", False):
         return RedirectResponse("/")
     with ui.card().classes("absolute-center"):
-        if app.storage.user.get("failed_attempts", 0) >= 3:
+        if app.storage.user.get("failed_attempts", 0) >= mt.config.MAX_PASSWORD_ATTEMPTS:
             access_denied_label()
         else:
             with ui.element("div") as login_form:
@@ -424,9 +424,9 @@ def main_page() -> None:  # noqa: D103
 
 # Common parameters for ui.run
 run_params = {
-    "port": 6520,
+    "port": mt.env["APP_PORT"],
     "show": False,
-    "title": "Milk Tracker",
+    "title": mt.config.TITLE,
     "storage_secret": mt.env["STORAGE_SECRET"],
 }
 
