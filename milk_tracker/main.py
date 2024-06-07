@@ -366,37 +366,7 @@ def main_page() -> None:  # noqa: D103
     ui.markdown("## Statistics")
 
     def generate_summary_table() -> ui.table:
-        summary_df: pd.DataFrame = (
-            mt.meals.df.groupby("date")
-            .agg(
-                number_of_rows=pd.NamedAgg(column="date", aggfunc="count"),
-                average=pd.NamedAgg(column="duration", aggfunc="mean"),
-                min=pd.NamedAgg(column="duration", aggfunc="min"),
-                max=pd.NamedAgg(column="duration", aggfunc="max"),
-                sum=pd.NamedAgg(column="duration", aggfunc="sum"),
-            )
-            .reset_index()
-        )
-
-        summary_df[["average", "min", "max", "sum"]] = summary_df[
-            ["average", "min", "max", "sum"]
-        ].apply(
-            lambda x: x.apply(timedelta_to_hrmin),
-        )
-
-        # Rename the columns for clarity
-        summary_df = summary_df.rename(
-            columns={
-                "date": "Date",
-                "number_of_rows": "Number of meals",
-                "average": "Average duration",
-                "min": "Minimum duration",
-                "max": "Maximum duration",
-                "sum": "Cumulative duration",
-            }
-        ).iloc[::-1]
-
-        return ui.table.from_pandas(summary_df)
+        return ui.table.from_pandas(mt.meals.generate_stats())
 
     # Display the summary DataFrame
     with ui.element() as table_summary_container:

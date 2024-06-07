@@ -120,6 +120,74 @@ class DataModel:
         # Merge
         self.df = pd.concat([self.df, new_entry], ignore_index=True)
 
+    def generate_stats(self) -> pd.DataFrame:
+        """Generate statistics from all meals.
+
+        Returns
+        -------
+        pd.DataFrame
+            Statistics per day: columns = 'Date', 'Meals', 'Avg duration', 'Min duration',
+            'Max duration', 'Cumul. duration'
+
+        """
+        summary_df: pd.DataFrame = (
+            self.df.groupby("date")
+            .agg(
+                number_of_rows=pd.NamedAgg(column="date", aggfunc="count"),
+                min_duration=pd.NamedAgg(column="duration", aggfunc="min"),
+                avg_duration=pd.NamedAgg(column="duration", aggfunc="mean"),
+                max_duration=pd.NamedAgg(column="duration", aggfunc="max"),
+                sum_duration=pd.NamedAgg(column="duration", aggfunc="sum"),
+                min_previous_end=pd.NamedAgg(column="time_since_previous_end", aggfunc="min"),
+                avg_previous_end=pd.NamedAgg(column="time_since_previous_end", aggfunc="mean"),
+                max_previous_end=pd.NamedAgg(column="time_since_previous_end", aggfunc="max"),
+                sum_previous_end=pd.NamedAgg(column="time_since_previous_end", aggfunc="sum"),
+            )
+            .reset_index()
+        )
+
+        summary_df[
+            [
+                "min_duration",
+                "avg_duration",
+                "max_duration",
+                "sum_duration",
+                "min_previous_end",
+                "avg_previous_end",
+                "max_previous_end",
+                "sum_previous_end",
+            ]
+        ] = summary_df[
+            [
+                "min_duration",
+                "avg_duration",
+                "max_duration",
+                "sum_duration",
+                "min_previous_end",
+                "avg_previous_end",
+                "max_previous_end",
+                "sum_previous_end",
+            ]
+        ].apply(
+            lambda x: x.apply(timedelta_to_hrmin),
+        )
+
+        # Rename the columns for clarity
+        return summary_df.rename(
+            columns={
+                "date": "Date",
+                "number_of_rows": "Meals",
+                "min_duration": "Min duration",
+                "avg_duration": "Avg duration",
+                "max_duration": "Max duration",
+                "sum_duration": "Cumul. duration",
+                "min_previous_end": "Min time since prev. end",
+                "avg_previous_end": "Avg time since prev. end",
+                "max_previous_end": "Max time since prev. end",
+                "sum_previous_end": "Cumul. awake+sleep time",
+            }
+        ).iloc[::-1]
+
     def delete_latest(self, meal_type: Literal["ongoing", "finished", "any"] = "any") -> None:
         """Delete latest meal from dataset."""
         if meal_type != "ongoing" or (
