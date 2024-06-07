@@ -420,23 +420,9 @@ def main_page() -> None:  # noqa: D103
         generate_summary_table()
 
 
-# TODO @tmlmt: remove as not used in production
-
-# Common parameters for ui.run
-run_params = {
-    "port": mt.env["APP_PORT"],
-    "show": False,
-    "title": mt.config.TITLE,
-    "storage_secret": mt.env["STORAGE_SECRET"],
-}
-
-# Run in HTTPS if a certificate is given in the .env file
-if (
-    all(s in mt.env for s in ["SSL_ENABLED", "SSL_KEYFILE", "SSL_CERTFILE"])
-    and mt.env["SSL_ENABLED"] == "True"
-):
-    run_params.update(
-        {"ssl_certfile": mt.env["SSL_CERTFILE"], "ssl_keyfile": mt.env["SSL_KEYFILE"]}
-    )
-
-ui.run(**run_params)  # type: ignore[arg-type]
+ui.run(
+    port=int(mt.env["APP_PORT"]),
+    show=False,
+    title=mt.config.TITLE,
+    storage_secret=mt.env["STORAGE_SECRET"],
+)
