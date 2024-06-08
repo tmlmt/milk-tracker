@@ -73,6 +73,8 @@ def login() -> Union[None, RedirectResponse]:  # noqa: D103
 
 @ui.page("/")
 def main_page() -> None:  # noqa: D103
+    ui.add_sass(Path("css") / "table.sass")
+
     mt.load_data()
 
     def force_update_view() -> None:
@@ -249,56 +251,6 @@ def main_page() -> None:  # noqa: D103
         )
 
     ui.markdown("## 10 last meals")
-
-    # TODO: move css to external file
-
-    ui.add_sass("""
-    .sticky-header-column-table
-        /* height or max-height is important */
-        height: 528px
-
-        /* specifying max-width so the example can
-            highlight the sticky column on any browser window */
-        max-width: calc(100vw - 2rem)
-
-        td:first-child
-            /* bg color is important for td; just specify one */
-            background-color: #90caf9
-            color: white
-
-        tr th
-            position: sticky
-            /* higher than z-index for td below */
-            z-index: 2
-            /* bg color is important; just specify one */
-            background: #90caf9
-            color: white
-
-        /* this will be the loading indicator */
-        thead tr:last-child th
-            /* height of all previous header rows */
-            top: 48px
-            /* highest z-index */
-            z-index: 3
-        thead tr:first-child th
-            top: 0
-            z-index: 1
-        tr:first-child th:first-child
-            /* highest z-index */
-            z-index: 3
-
-        td:first-child
-            z-index: 1
-
-        td:first-child, th:first-child
-            position: sticky
-            left: 0
-
-        /* prevent scrolling behind sticky top row on focus */
-        tbody
-            /* height of all previous header rows */
-            scroll-margin-top: 48px
-    """)
 
     def generate_latest_meals_table() -> ui.table:
         return ui.table.from_pandas(
