@@ -1,6 +1,90 @@
 # Changelog
 
 ---
+## [2.0.0-beta.2](https://github.com/tmlmt/milk-tracker/compare/v2.0.0-beta.1..v2.0.0-beta.2) - 2024-06-07
+
+### 🤖 CI
+
+- add coverage badge - ([f383faa](https://github.com/tmlmt/milk-tracker/commit/f383faaba16670b2b9cd0bcb2d86c2c61e15f8ec)) - Thomas Lamant
+
+### 🏡 Chore
+
+- **(coverage)** update badge - ([a669b20](https://github.com/tmlmt/milk-tracker/commit/a669b203efca3321fcdfa982d13a5a21bd1d2f8f)) - github-actions[bot]
+- **(readme)** add text, version and coverage badges - ([68fd19e](https://github.com/tmlmt/milk-tracker/commit/68fd19eb4a1f185ec93b1a3353dba2f096cbf5e7)) - Thomas Lamant
+
+---
+## [2.0.0-beta.1](https://github.com/tmlmt/milk-tracker/compare/v2.0.0-beta.0..v2.0.0-beta.1) - 2024-06-07
+
+### 🚀 Enhancements
+
+- **(stats)** add time since previous end - ([c3d6c78](https://github.com/tmlmt/milk-tracker/commit/c3d6c78a0fa2c3dab138c84cf00791346b32241c)) - Thomas Lamant
+- responsive tables - ([92c981c](https://github.com/tmlmt/milk-tracker/commit/92c981cfc28fa144f4d4154f44ce436d218818de)) - Thomas Lamant
+
+### 🚜 Refactor
+
+- resolve PD011 - ([faa79b1](https://github.com/tmlmt/milk-tracker/commit/faa79b14198dd7d45e1faa1a024ce973ffecc578)) - Thomas Lamant
+- move title, port and max_password_attempts to config and env files - ([1a234b7](https://github.com/tmlmt/milk-tracker/commit/1a234b71ea3614f80ca0116e197945b287cf6942)) - Thomas Lamant
+
+### 🏡 Chore
+
+- **(env)** add sass - ([4048e08](https://github.com/tmlmt/milk-tracker/commit/4048e086c844f84ac33317e68cc926850fdf8818)) - Thomas Lamant
+- **(main)** remove unused imports - ([dbfef3f](https://github.com/tmlmt/milk-tracker/commit/dbfef3f26a07b703abd812cd0a53e4645b09ed4f)) - Thomas Lamant
+- remove unused SSL capability - ([d742009](https://github.com/tmlmt/milk-tracker/commit/d7420093208e82b64b394ba3220ab23732ff88bf)) - Thomas Lamant
+- add TODO - ([0f3f457](https://github.com/tmlmt/milk-tracker/commit/0f3f4571252a1829b379499f362f41b78cda87ea)) - Thomas Lamant
+
+---
+## [2.0.0-beta.0](https://github.com/tmlmt/milk-tracker/compare/v1.3.0..v2.0.0-beta.0) - 2024-06-06
+
+### 🚀 Enhancements
+
+- **(summary_table)** reverse order - ([38e6f5d](https://github.com/tmlmt/milk-tracker/commit/38e6f5daec79bcbc7b0c2a1eb841a994bc9816c8)) - Thomas Lamant
+- order latest table meal backwards - ([5260263](https://github.com/tmlmt/milk-tracker/commit/526026366eef22686811db5206f6cfcbc10454a6)) - Thomas Lamant
+
+### 🚜 Refactor
+
+- introduce model and controller design pattern - ([3b5688c](https://github.com/tmlmt/milk-tracker/commit/3b5688c6fc36c5702de04bc33d70e8e351cd9bb9)) - Thomas Lamant
+- introduce data models for ongoing and finished meals - ([eb61515](https://github.com/tmlmt/milk-tracker/commit/eb61515bc5a2c301ac0d8d6b6f7b83f41a515d80)) - Thomas Lamant
+
+### 🎨 Style
+
+- format imports and auto-format imports on save - ([5f17a9d](https://github.com/tmlmt/milk-tracker/commit/5f17a9de074516d7490b22aa9a5d9f1f420865a2)) - Thomas Lamant
+- apply stricter linting rules - ([4377c1d](https://github.com/tmlmt/milk-tracker/commit/4377c1d41b8383e8bfcb8a0d0ab58c635e01ce25)) - Thomas Lamant
+- reorganize libs and lint - ([8a15b65](https://github.com/tmlmt/milk-tracker/commit/8a15b65ebcdec3bab7022745ca488b258e4642fd)) - Thomas Lamant
+
+### 🌊 Types
+
+- **(main)** fix imports and other misc errors - ([a4a8a27](https://github.com/tmlmt/milk-tracker/commit/a4a8a276697fe6fd29c57bbfdd5126668eec2b6e)) - Thomas Lamant
+- fix is_time_format() - ([cadec8c](https://github.com/tmlmt/milk-tracker/commit/cadec8cb9569d594305131da181bf81642398d61)) - Thomas Lamant
+
+### 🧪 Tests
+
+- add tests for meal schemas and time utils - ([6852ca5](https://github.com/tmlmt/milk-tracker/commit/6852ca5a981ea57610dc6ed53114437084230c5a)) - Thomas Lamant
+
+### 🏡 Chore
+
+- **(dev)** rename vscode workspace - ([65efa09](https://github.com/tmlmt/milk-tracker/commit/65efa0967558db426940b7203952b0553aab626c)) - Thomas Lamant
+- **(mypy)** activate pydantic plugin - ([c39c0dc](https://github.com/tmlmt/milk-tracker/commit/c39c0dc4303e183623a8e87f79e8121b8f007c39)) - Thomas Lamant
+- avoid using mypy daemon as it prevents mypy from being called - ([3e80296](https://github.com/tmlmt/milk-tracker/commit/3e80296184344ba6e559ff97afa7420e1f189617)) - Thomas Lamant
+- designate milk_tracker as package - ([06f0010](https://github.com/tmlmt/milk-tracker/commit/06f001058c6f437aef4b7d5c93bf5b3d900f712e)) - Thomas Lamant
+- update env file - ([0be6e36](https://github.com/tmlmt/milk-tracker/commit/0be6e3633480a6faccf0d3f37bc4b15374bf4762)) - Thomas Lamant
+
+---
+## [1.3.0](https://github.com/tmlmt/milk-tracker/compare/v1.2.0..v1.3.0) - 2024-06-01
+
+### 🚀 Enhancements
+
+- improve charts interaction and display on mobile - ([a4f10e6](https://github.com/tmlmt/milk-tracker/commit/a4f10e63a00720bdf14e0b8bc1d104fd91f37243)) - Thomas Lamant
+
+### 🩹 Fixes
+
+- column names in last meals table - ([1eaea92](https://github.com/tmlmt/milk-tracker/commit/1eaea92d13b9470e144ed84ad02f30851cb67968)) - Thomas Lamant
+- some display improvements on mobile - ([75e9bca](https://github.com/tmlmt/milk-tracker/commit/75e9bca2e6883d37eadbb10006b704a85b1f8074)) - Thomas Lamant
+
+### 🏡 Chore
+
+- format main.py - ([31901c1](https://github.com/tmlmt/milk-tracker/commit/31901c19441ed63d7e31ce869fd82b1d51ecb604)) - Thomas Lamant
+
+---
 ## [1.2.0](https://github.com/tmlmt/milk-tracker/compare/v1.1.0..v1.2.0) - 2024-05-30
 
 ### 🚀 Enhancements
@@ -15,34 +99,36 @@
 ### 🏡 Chore
 
 - **(changelog)** fix repo url - ([592d7b3](https://github.com/tmlmt/milk-tracker/commit/592d7b396493082c9bef8b4bd2711967c68cacdd)) - Thomas Lamant
+- **(changelog)** v1.2 - ([6f79dea](https://github.com/tmlmt/milk-tracker/commit/6f79deaef063177a39eb109a9e76a5cab6e635a4)) - Thomas Lamant
 - ignore journal files and replace file in repo with template - ([de96af5](https://github.com/tmlmt/milk-tracker/commit/de96af5360a1f322291758962e42e1391a12f487)) - Thomas Lamant
 
 ---
-## [1.1.0](https://github.com/tmlmt/milktracker/compare/v1.0.0..v1.1.0) - 2024-05-28
+## [1.1.0](https://github.com/tmlmt/milk-tracker/compare/v1.0.0..v1.1.0) - 2024-05-28
 
 ### 🚀 Enhancements
 
-- **(charts)** show duration in minutes instead of hours - ([5d3cdad](https://github.com/tmlmt/milktracker/commit/5d3cdadbd20be0f73341551c57879f07d7eff5db)) - Thomas Lamant
-- **(charts)** set yaxis to start at 0 - ([3e3f3e6](https://github.com/tmlmt/milktracker/commit/3e3f3e6b731f25fe4690b347a4fffe19e917b276)) - Thomas Lamant
-- **(new_meal)** input field masks and validation - ([a350f01](https://github.com/tmlmt/milktracker/commit/a350f01ec4a3002e133e89a71ccfcebc73e452b3)) - Thomas Lamant
+- **(charts)** show duration in minutes instead of hours - ([5d3cdad](https://github.com/tmlmt/milk-tracker/commit/5d3cdadbd20be0f73341551c57879f07d7eff5db)) - Thomas Lamant
+- **(charts)** set yaxis to start at 0 - ([3e3f3e6](https://github.com/tmlmt/milk-tracker/commit/3e3f3e6b731f25fe4690b347a4fffe19e917b276)) - Thomas Lamant
+- **(new_meal)** input field masks and validation - ([a350f01](https://github.com/tmlmt/milk-tracker/commit/a350f01ec4a3002e133e89a71ccfcebc73e452b3)) - Thomas Lamant
 
 ### 🩹 Fixes
 
-- **(force_update)** also update every-minute continuous update fields - ([727e628](https://github.com/tmlmt/milktracker/commit/727e6288fc947d8b447f9ff7ce9978f15606851e)) - Thomas Lamant
-- **(new_meal)** lazy-rules and unwanted menu opening on click - ([ebbe66a](https://github.com/tmlmt/milktracker/commit/ebbe66a73cc8dd95538ac4452106f86c3b53d3c4)) - Thomas Lamant
+- **(force_update)** also update every-minute continuous update fields - ([727e628](https://github.com/tmlmt/milk-tracker/commit/727e6288fc947d8b447f9ff7ce9978f15606851e)) - Thomas Lamant
+- **(new_meal)** lazy-rules and unwanted menu opening on click - ([ebbe66a](https://github.com/tmlmt/milk-tracker/commit/ebbe66a73cc8dd95538ac4452106f86c3b53d3c4)) - Thomas Lamant
 
 ### 🔥 Performance
 
-- no need to dedent markdown multi-lines - ([171169b](https://github.com/tmlmt/milktracker/commit/171169bf4051f495eeb294854211e78fb812b5b4)) - Thomas Lamant
+- no need to dedent markdown multi-lines - ([171169b](https://github.com/tmlmt/milk-tracker/commit/171169bf4051f495eeb294854211e78fb812b5b4)) - Thomas Lamant
 
 ### 🎨 Style
 
-- **(new_meal)** smaller input fields - ([166c958](https://github.com/tmlmt/milktracker/commit/166c958d806e0ca8b24c6b25565b9fe463c42db9)) - Thomas Lamant
-- display latest_meal_info as a text block instead of a list - ([0af0d16](https://github.com/tmlmt/milktracker/commit/0af0d16568df2839e52c4a1c4d1f0dabaa72047e)) - Thomas Lamant
+- **(new_meal)** smaller input fields - ([166c958](https://github.com/tmlmt/milk-tracker/commit/166c958d806e0ca8b24c6b25565b9fe463c42db9)) - Thomas Lamant
+- display latest_meal_info as a text block instead of a list - ([0af0d16](https://github.com/tmlmt/milk-tracker/commit/0af0d16568df2839e52c4a1c4d1f0dabaa72047e)) - Thomas Lamant
 
 ### 🏡 Chore
 
-- add config file for git-cliff - ([fa98f3f](https://github.com/tmlmt/milktracker/commit/fa98f3f0b222053de714fbdc6d35a863c6fe27f0)) - Thomas Lamant
+- **(changelog)** v1.1.0 - ([92dc1ec](https://github.com/tmlmt/milk-tracker/commit/92dc1ecbe430ff3015c83ba5df0d35752c4532b3)) - Thomas Lamant
+- add config file for git-cliff - ([fa98f3f](https://github.com/tmlmt/milk-tracker/commit/fa98f3f0b222053de714fbdc6d35a863c6fe27f0)) - Thomas Lamant
 
 ---
 ## [1.0.0] - 2024-05-28
@@ -53,24 +139,24 @@ Minimum Viable Product
 
 ### 🚀 Enhancements
 
-- mvp - ([b9bab5e](https://github.com/tmlmt/milktracker/commit/b9bab5e7553b19ffc61be9dbcbb07045d93e754c)) - Thomas Lamant
-- enable running with ssl - ([52ab3e5](https://github.com/tmlmt/milktracker/commit/52ab3e542a23d65ca35dd2cd31ad2dff645872b7)) - Thomas Lamant
-- add SSL_ENABLED toggle env var - ([c5e8e98](https://github.com/tmlmt/milktracker/commit/c5e8e98292a98f3e3900a592a28598b29ff11389)) - Thomas Lamant
-- password authorization - ([bb56652](https://github.com/tmlmt/milktracker/commit/bb566526543a0ec0217392de53a81a93ec0a7c28)) - Thomas Lamant
+- mvp - ([b9bab5e](https://github.com/tmlmt/milk-tracker/commit/b9bab5e7553b19ffc61be9dbcbb07045d93e754c)) - Thomas Lamant
+- enable running with ssl - ([52ab3e5](https://github.com/tmlmt/milk-tracker/commit/52ab3e542a23d65ca35dd2cd31ad2dff645872b7)) - Thomas Lamant
+- add SSL_ENABLED toggle env var - ([c5e8e98](https://github.com/tmlmt/milk-tracker/commit/c5e8e98292a98f3e3900a592a28598b29ff11389)) - Thomas Lamant
+- password authorization - ([bb56652](https://github.com/tmlmt/milk-tracker/commit/bb566526543a0ec0217392de53a81a93ec0a7c28)) - Thomas Lamant
 
 ### 🩹 Fixes
 
-- restore journal file to default - ([e0d376f](https://github.com/tmlmt/milktracker/commit/e0d376f3a463145afec069b30c6df09bbafdb70e)) - Thomas Lamant
+- restore journal file to default - ([e0d376f](https://github.com/tmlmt/milk-tracker/commit/e0d376f3a463145afec069b30c6df09bbafdb70e)) - Thomas Lamant
 
 ### 🎨 Style
 
-- add page title - ([b950e22](https://github.com/tmlmt/milktracker/commit/b950e2226c56f66b875ed6aa91fa49531c2c353a)) - Thomas Lamant
+- add page title - ([b950e22](https://github.com/tmlmt/milk-tracker/commit/b950e2226c56f66b875ed6aa91fa49531c2c353a)) - Thomas Lamant
 
 ### 🏡 Chore
 
-- export micromamba/conda env spec file - ([1456483](https://github.com/tmlmt/milktracker/commit/14564833ee12201bcbea095a5ad03307d8f06da3)) - Thomas Lamant
-- assign port and disable auto-show - ([73e7ba7](https://github.com/tmlmt/milktracker/commit/73e7ba71bab8a91c4b2eccfe00ca5b2eb2513b5d)) - Thomas Lamant
-- ignore .nicegui folder - ([420e9ee](https://github.com/tmlmt/milktracker/commit/420e9ee7ca87fa4636abdaa2c551fbb56d9a3ceb)) - Thomas Lamant
-- update env specs with argon2 - ([dee8030](https://github.com/tmlmt/milktracker/commit/dee8030ade77d7efbd8240423a8cd6310f5b2578)) - Thomas Lamant
+- export micromamba/conda env spec file - ([1456483](https://github.com/tmlmt/milk-tracker/commit/14564833ee12201bcbea095a5ad03307d8f06da3)) - Thomas Lamant
+- assign port and disable auto-show - ([73e7ba7](https://github.com/tmlmt/milk-tracker/commit/73e7ba71bab8a91c4b2eccfe00ca5b2eb2513b5d)) - Thomas Lamant
+- ignore .nicegui folder - ([420e9ee](https://github.com/tmlmt/milk-tracker/commit/420e9ee7ca87fa4636abdaa2c551fbb56d9a3ceb)) - Thomas Lamant
+- update env specs with argon2 - ([dee8030](https://github.com/tmlmt/milk-tracker/commit/dee8030ade77d7efbd8240423a8cd6310f5b2578)) - Thomas Lamant
 
 <!-- generated by git-cliff -->
