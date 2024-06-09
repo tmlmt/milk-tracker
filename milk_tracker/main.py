@@ -342,15 +342,22 @@ def main_page() -> None:  # noqa: D103
                     "range": [-max_y * 0.05, max_y * 1.05],
                 },
                 "dragmode": False,
+                "legend": {
+                    "orientation": "h",
+                    "xanchor": "center",
+                    "x": 0.5,
+                    "yanchor": "top",
+                    "y": -0.3,
+                },
             },
             "config": mt.config.PLOTLY_DEFAULT_CONFIG,
         }
 
     with ui.tabs() as tabs_graphs:
         ui.tab("duration", label="Duration")
-        ui.tab("previous_start", label="Time since previous START")
-        ui.tab("previous_end", label="Time since previous END")
-    with ui.tab_panels(tabs_graphs, value="previous_end").classes("w-3xl"):
+        ui.tab("previous_start", label="Previous START")
+        ui.tab("previous_end", label="Previous END")
+    with ui.tab_panels(tabs_graphs, value="previous_end"):
         with ui.tab_panel("duration"):
             figure_duration = ui.plotly(
                 generate_graph(
@@ -358,7 +365,7 @@ def main_page() -> None:  # noqa: D103
                     "Duration as a function of start time for the latest three dates",
                     "Duration (min)",
                 )
-            )
+            ).classes("w-screen-and-padding")
         with ui.tab_panel("previous_start"):
             figure_time_since_previous_start = ui.plotly(
                 generate_graph(
@@ -366,7 +373,7 @@ def main_page() -> None:  # noqa: D103
                     "Time interval since previous START of meal",
                     "Time interval (hrs)",
                 )
-            )
+            ).classes("w-screen-and-padding")
         with ui.tab_panel("previous_end"):
             figure_time_since_previous_end = ui.plotly(
                 generate_graph(
@@ -374,7 +381,7 @@ def main_page() -> None:  # noqa: D103
                     "Time interval since previous END of meal",
                     "Time interval (hrs)",
                 )
-            )
+            ).classes("w-screen-and-padding")
 
     ui.markdown("## Statistics")
 
@@ -434,12 +441,12 @@ def main_page() -> None:  # noqa: D103
             "data": graph_data,
             "layout": {
                 "title": title,
-                "xaxis": {"title": "Date"},
+                "xaxis": {"title": "Date", "tickformat": "%Y-%m-%d"},
                 "yaxis": {
                     "title": yaxis_title,
                 },
                 "dragmode": "pan",
-                "selectdirection": "h",
+                "showlegend": False,
             },
             "config": mt.config.PLOTLY_DEFAULT_CONFIG,
         }
@@ -447,7 +454,7 @@ def main_page() -> None:  # noqa: D103
     with ui.tabs() as tabs_summary_graphs:
         ui.tab("meals", label="Meals")
         ui.tab("duration", label="Duration")
-        ui.tab("previous_end", label="Time since previous END")
+        ui.tab("previous_end", label="Previous END")
     with ui.tab_panels(tabs_summary_graphs, value="meals").classes("w-3xl"):
         with ui.tab_panel("meals"):
             figure_summary_meals = ui.plotly(
