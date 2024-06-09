@@ -180,11 +180,8 @@ class AppController:
 
     def cancel_ongoing_meal(self) -> None:
         """Remove ongoing meal from state and dataset."""
-        print("Entering cancel_ongoing")
         self.meals.delete_latest("ongoing")
-        print("About to None ongoing_meal")
         self.ongoing_meal = None
-        print("About to COmpute all")
         self.compute_all()
 
     def add_finished_meal(self, date: str, start_time: str, end_time: str) -> None:
