@@ -21,12 +21,6 @@ mt = AppController(CONFIG_FILE)
 app.add_middleware(AuthMiddleware)
 ph = PasswordHasher()
 
-# Declaration
-current_time = None
-time_since_latest_end = None
-time_since_latest_start = None
-latest_meal_info = None
-
 
 @ui.page("/login")
 def login() -> Union[None, RedirectResponse]:  # noqa: D103
