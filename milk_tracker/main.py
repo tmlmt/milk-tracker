@@ -84,21 +84,21 @@ def main_page() -> None:  # noqa: D103
         figure_duration.update_figure(
             generate_graph(
                 "duration_min",
-                "Duration as a Function of Start Time for the Latest Three Dates",
+                "Duration as a function of start time for the latest three dates",
                 "Duration (min)",
             )
         )
         figure_time_since_previous_start.update_figure(
             generate_graph(
                 "time_since_previous_start_hrs",
-                "Time interval since previous start of meal",
+                "Time interval since previous START of meal",
                 "Time interval (hrs)",
             )
         )
         figure_time_since_previous_end.update_figure(
             generate_graph(
                 "time_since_previous_end_hrs",
-                "Time interval since previous end of meal",
+                "Time interval since previous END of meal",
                 "Time interval (hrs)",
             )
         )
@@ -287,11 +287,17 @@ def main_page() -> None:  # noqa: D103
 
     ui.markdown("## Graphs")
 
-    def generate_graph(field: str, title: str, yaxis_title: str) -> dict:
+    def generate_graph(
+        field: Literal[
+            "duration_min", "time_since_previous_start_hrs", "time_since_previous_end_hrs"
+        ],
+        title: str,
+        yaxis_title: str,
+    ) -> dict:
         # Get the three latest dates
         latest_dates = mt.meals.df["date"].drop_duplicates().nlargest(3)
 
-        graph_data = []
+        graph_data: List[Dict[str, Any]] = []
         for date in latest_dates:
             date_data = mt.meals.df[mt.meals.df["date"] == date]
             date_data = date_data[
@@ -331,30 +337,30 @@ def main_page() -> None:  # noqa: D103
 
     with ui.tabs() as tabs_graphs:
         ui.tab("duration", label="Duration")
-        ui.tab("latest_start", label="Time since latest START")
-        ui.tab("latest_end", label="Time since latest END")
-    with ui.tab_panels(tabs_graphs, value="latest_end").classes("w-3xl"):
+        ui.tab("previous_start", label="Time since previous START")
+        ui.tab("previous_end", label="Time since previous END")
+    with ui.tab_panels(tabs_graphs, value="previous_end").classes("w-3xl"):
         with ui.tab_panel("duration"):
             figure_duration = ui.plotly(
                 generate_graph(
                     "duration_min",
-                    "Duration as a Function of Start Time for the Latest Three Dates",
+                    "Duration as a function of start time for the latest three dates",
                     "Duration (min)",
                 )
             )
-        with ui.tab_panel("latest_start"):
+        with ui.tab_panel("previous_start"):
             figure_time_since_previous_start = ui.plotly(
                 generate_graph(
                     "time_since_previous_start_hrs",
-                    "Time interval since previous start of meal",
+                    "Time interval since previous START of meal",
                     "Time interval (hrs)",
                 )
             )
-        with ui.tab_panel("latest_end"):
+        with ui.tab_panel("previous_end"):
             figure_time_since_previous_end = ui.plotly(
                 generate_graph(
                     "time_since_previous_end_hrs",
-                    "Time interval since previous end of meal",
+                    "Time interval since previous END of meal",
                     "Time interval (hrs)",
                 )
             )
