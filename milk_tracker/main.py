@@ -102,6 +102,17 @@ def main_page() -> None:  # noqa: D103
                 "Time interval (hrs)",
             )
         )
+        figure_summary_meals.update_figure(
+            generate_summary_graph("meals", "Number of meals per day", "Quantity")
+        )
+        figure_summary_duration.update_figure(
+            generate_summary_graph("duration", "Meal duration", "Duration (min)")
+        )
+        figure_summary_previous_end.update_figure(
+            generate_summary_graph(
+                "previous_end", "Time since previous end of meal", "Time interval (hrs)"
+            )
+        )
 
     ui.timer(1.0, mt.do_continuous_update)
 
@@ -439,15 +450,15 @@ def main_page() -> None:  # noqa: D103
         ui.tab("previous_end", label="Time since previous END")
     with ui.tab_panels(tabs_summary_graphs, value="meals").classes("w-3xl"):
         with ui.tab_panel("meals"):
-            ui.plotly(
+            figure_summary_meals = ui.plotly(
                 generate_summary_graph("meals", "Number of meals per day", "Quantity")
             ).classes("w-screen-and-padding")
         with ui.tab_panel("duration"):
-            ui.plotly(
+            figure_summary_duration = ui.plotly(
                 generate_summary_graph("duration", "Meal duration", "Duration (min)")
             ).classes("w-screen-and-padding")
         with ui.tab_panel("previous_end"):
-            ui.plotly(
+            figure_summary_previous_end = ui.plotly(
                 generate_summary_graph(
                     "previous_end", "Time since previous end of meal", "Time interval (hrs)"
                 )
