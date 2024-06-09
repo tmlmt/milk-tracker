@@ -1,9 +1,9 @@
 from pathlib import Path
-from typing import List, Literal
+from typing import List, Literal, Union
 
 import pandas as pd
 from schemas.meal import Meal
-from utils.time_utils import timedelta_to_hrmin
+from utils.time_utils import timedelta_to_float, timedelta_to_hrmin
 
 
 class DataModel:
@@ -13,6 +13,8 @@ class DataModel:
         self.file_path: Path = file_path
         self.base_fields: List[str] = ["date", "start_time", "end_time"]
         self.df: pd.DataFrame = pd.read_excel(file_path)
+        self.df_summary_raw: Union[pd.DataFrame, None] = None
+        self.df_summary_txt: Union[pd.DataFrame, None] = None
         self.load()
 
     def load(self) -> None:
@@ -120,17 +122,9 @@ class DataModel:
         # Merge
         self.df = pd.concat([self.df, new_entry], ignore_index=True)
 
-    def generate_stats(self) -> pd.DataFrame:
-        """Generate statistics from all meals.
-
-        Returns
-        -------
-        pd.DataFrame
-            Statistics per day: columns = 'Date', 'Meals', 'Avg duration', 'Min duration',
-            'Max duration', 'Cumul. duration'
-
-        """
-        summary_df: pd.DataFrame = (
+    def compute_summary(self) -> None:
+        """Generate statistics from all meals."""
+        summary_df = (
             self.df.groupby("date")
             .agg(
                 number_of_rows=pd.NamedAgg(column="date", aggfunc="count"),
@@ -146,7 +140,9 @@ class DataModel:
             .reset_index()
         )
 
-        summary_df[
+        summary_df_txt = summary_df.copy()
+
+        summary_df_txt[
             [
                 "min_duration",
                 "avg_duration",
@@ -157,7 +153,7 @@ class DataModel:
                 "max_previous_end",
                 "sum_previous_end",
             ]
-        ] = summary_df[
+        ] = summary_df_txt[
             [
                 "min_duration",
                 "avg_duration",
@@ -173,7 +169,7 @@ class DataModel:
         )
 
         # Rename the columns for clarity
-        return summary_df.rename(
+        self.df_summary_txt = summary_df_txt.rename(
             columns={
                 "date": "Date",
                 "number_of_rows": "Meals",
@@ -185,8 +181,24 @@ class DataModel:
                 "avg_previous_end": "Avg time since prev. end",
                 "max_previous_end": "Max time since prev. end",
                 "sum_previous_end": "Cumul. awake+sleep time",
-            }
+            },
         ).iloc[::-1]
+
+        summary_df[["min_duration", "avg_duration", "max_duration", "sum_duration"]] = summary_df[
+            ["min_duration", "avg_duration", "max_duration", "sum_duration"]
+        ].apply(
+            lambda x: x.apply(lambda x: timedelta_to_float(x, "m")),
+        )
+
+        summary_df[
+            ["min_previous_end", "avg_previous_end", "max_previous_end", "sum_previous_end"]
+        ] = summary_df[
+            ["min_previous_end", "avg_previous_end", "max_previous_end", "sum_previous_end"]
+        ].apply(
+            lambda x: x.apply(lambda x: timedelta_to_float(x, "h")),
+        )
+
+        self.df_summary_raw = summary_df
 
     def delete_latest(self, meal_type: Literal["ongoing", "finished", "any"] = "any") -> None:
         """Delete latest meal from dataset."""

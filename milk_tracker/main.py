@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Union
+from typing import Any, Dict, List, Literal, Union
 
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
@@ -73,6 +73,9 @@ def login() -> Union[None, RedirectResponse]:  # noqa: D103
 
 @ui.page("/")
 def main_page() -> None:  # noqa: D103
+    # Common CSS for all pages
+    ui.add_sass(Path("css") / "main.sass")
+    # Specific CSS
     ui.add_sass(Path("css") / "table.sass")
 
     mt.load_data()
@@ -332,11 +335,11 @@ def main_page() -> None:  # noqa: D103
             "config": mt.config.PLOTLY_DEFAULT_CONFIG,
         }
 
-    with ui.tabs() as tabs:
+    with ui.tabs() as tabs_graphs:
         ui.tab("duration", label="Duration")
         ui.tab("latest_start", label="Time since latest START")
         ui.tab("latest_end", label="Time since latest END")
-    with ui.tab_panels(tabs, value="latest_end").classes("w-3xl"):
+    with ui.tab_panels(tabs_graphs, value="latest_end").classes("w-3xl"):
         with ui.tab_panel("duration"):
             figure_duration = ui.plotly(
                 generate_graph(
@@ -365,13 +368,90 @@ def main_page() -> None:  # noqa: D103
     ui.markdown("## Statistics")
 
     def generate_summary_table() -> ui.table:
-        return ui.table.from_pandas(mt.meals.generate_stats(), pagination=0).props(
+        mt.meals.compute_summary()
+        return ui.table.from_pandas(mt.meals.df_summary_txt, pagination=0).props(  # type: ignore[arg-type]
             "table-class='sticky-header-column-table' virtual-scroll hide-pagination"
         )
 
     # Display the summary DataFrame
     with ui.element() as table_summary_container:
         generate_summary_table()
+
+    def generate_summary_graph(
+        field: Literal["meals", "duration", "previous_end"], title: str, yaxis_title: str
+    ) -> dict:
+        if mt.meals.df_summary_raw is None:
+            msg = "Summary DataFrame not available"
+            raise Exception(msg)  # noqa: TRY002
+
+        graph_data: List[Dict[str, Any]] = [
+            {
+                "type": "scatter",
+                "name": "Data",
+                "mode": "markers+lines",
+                "color": "#5898D4",
+                "x": mt.meals.df_summary_raw["date"].astype(str).array.tolist(),
+            }
+        ]
+
+        if field == "meals":
+            graph_data[0].update({"y": mt.meals.df_summary_raw["number_of_rows"].array.tolist()})
+        else:
+            graph_data[0].update(
+                {
+                    "y": mt.meals.df_summary_raw[f"avg_{field}"].array.tolist(),
+                    "error_y": {
+                        "type": "data",
+                        "symmetric": False,
+                        "array": (
+                            mt.meals.df_summary_raw[f"max_{field}"]
+                            - mt.meals.df_summary_raw[f"avg_{field}"]
+                        ).array.tolist(),
+                        "arrayminus": (
+                            mt.meals.df_summary_raw[f"avg_{field}"]
+                            - mt.meals.df_summary_raw[f"min_{field}"]
+                        ).array.tolist(),
+                        "color": "#7D1128",
+                        "thickness": 1,
+                        "width": 3,
+                        "opacity": 1,
+                    },
+                }
+            )
+
+        return {
+            "data": graph_data,
+            "layout": {
+                "title": title,
+                "xaxis": {"title": "Date"},
+                "yaxis": {
+                    "title": yaxis_title,
+                },
+                "dragmode": "pan",
+                "selectdirection": "h",
+            },
+            "config": mt.config.PLOTLY_DEFAULT_CONFIG,
+        }
+
+    with ui.tabs() as tabs_summary_graphs:
+        ui.tab("meals", label="Meals")
+        ui.tab("duration", label="Duration")
+        ui.tab("previous_end", label="Time since previous END")
+    with ui.tab_panels(tabs_summary_graphs, value="meals").classes("w-3xl"):
+        with ui.tab_panel("meals"):
+            ui.plotly(
+                generate_summary_graph("meals", "Number of meals per day", "Quantity")
+            ).classes("w-screen-and-padding")
+        with ui.tab_panel("duration"):
+            ui.plotly(
+                generate_summary_graph("duration", "Meal duration", "Duration (min)")
+            ).classes("w-screen-and-padding")
+        with ui.tab_panel("previous_end"):
+            ui.plotly(
+                generate_summary_graph(
+                    "previous_end", "Time since previous end of meal", "Time interval (hrs)"
+                )
+            ).classes("w-screen-and-padding")
 
 
 ui.run(

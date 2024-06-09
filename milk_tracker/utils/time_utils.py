@@ -27,6 +27,27 @@ def timedelta_to_hrmin(td: pd.Timedelta) -> str:
     return f"{hours}h{minutes:02d}m" if hours > 0 else f"{minutes}m"
 
 
+def timedelta_to_float(td: pd.Timedelta, unit: Literal["m", "h"]) -> float:
+    """Convert a Pandas timedelta as float.
+
+    Args:
+    ----
+        td (pd.Timestamp): The timestamp to convert
+        unit (Literal["m", "h"]): Either to convert in minutes or hours
+
+    Returns:
+    -------
+        float: corresponding minutes or hours
+
+    """
+    # NaN can't be converted
+    if np.isnan(td.total_seconds()):
+        return np.nan
+    if unit == "m":
+        return td.total_seconds() / 60
+    return td.total_seconds() / 3600
+
+
 def is_time_format(
     test_string: str, time_format: Optional[Literal["short", "full", "any"]] = "any"
 ) -> bool:
