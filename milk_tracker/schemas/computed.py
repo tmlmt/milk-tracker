@@ -1,4 +1,5 @@
 from datetime import timedelta
+from typing import Literal
 
 from pydantic import Field, StringConstraints
 from typing_extensions import Annotated
@@ -30,3 +31,15 @@ class ComputedValues(UpdatableBaseModel):
         default=False,
         description="Lock state for input field of start of new meal"
     )  # fmt: skip
+    is_ongoing_meal_paused: bool = Field(
+        default=False,
+        description="Whether a ongoing meal is paused"
+    )  # fmt: skip
+    is_ongoing_meal_buttontxt: Literal["Pause", "New round"] = Field(
+        default="Pause",
+        description="Button label for ongoing meal"
+    )  # fmt: skip
+    timer_meal_round: Annotated[str, StringConstraints(pattern=r"^(\d{2}:)?\d{2}:\d{2}$")] = Field(
+        default="00:00",
+        description="Timer for meal round in format HH:mm",
+    )

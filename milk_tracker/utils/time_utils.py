@@ -1,5 +1,5 @@
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List, Literal, Optional
 
 import numpy as np
@@ -46,6 +46,101 @@ def timedelta_to_float(td: pd.Timedelta, unit: Literal["m", "h"]) -> float:
     if unit == "m":
         return td.total_seconds() / 60
     return td.total_seconds() / 3600
+
+
+def timedelta_to_timer(td: timedelta) -> str:
+    """Convert a timedelta to a string in %H:%M:%S format.
+
+    Parameters
+    ----------
+    td : timedelta
+        Timedelta to convert
+
+    Returns
+    -------
+    str
+        Time in [%H:]%M:%S format
+
+    """
+    # NaN can't be converted
+    if np.isnan(td.total_seconds()):
+        return ""
+    hours, remainder = divmod(int(td.total_seconds()), 60 * 60)
+    minutes, seconds = divmod(remainder, 60)
+    return (
+        f"{hours:02d}:{minutes:02d}:{seconds:02d}" if hours > 0 else f"{minutes:02d}:{seconds:02d}"
+    )
+
+
+def time_between(after_datetime: datetime, before_datetime: datetime) -> str:
+    """Return time elapsed between two datetimes.
+
+    Parameters
+    ----------
+    after_datetime : datetime
+        Later boundary
+    before_datetime : datetime
+        Earlier boundary
+
+    Returns
+    -------
+    str
+        Time string in [%H:]%M:%S format
+
+    Raises
+    ------
+    ValueError
+        If wrong order given
+
+    """
+    if after_datetime < before_datetime:
+        msg = "Check order in which you input the dates when using the time_between() function"
+        raise ValueError(msg)
+    return timedelta_to_timer(after_datetime - before_datetime)
+
+
+def time_since(since_time: datetime) -> str:
+    """Return time elapsed since input datetime.
+
+    Parameters
+    ----------
+    since_time : datetime
+        Input datetime
+
+    Returns
+    -------
+    str
+        Time in [%H:]%M:%S format
+
+    """
+    return time_between(datetime.now(), since_time)
+
+
+def is_same_minute(dt1: datetime, dt2: Optional[datetime] = None) -> bool:
+    """Check whether two datetime values are within the same minute.
+
+    Parameters
+    ----------
+    dt1 : datetime
+        First datetime to compare
+    dt2 : datetime, optional
+        Second datetime to compare, by default now
+
+    Returns
+    -------
+    bool
+        Check result
+
+    """
+    if not dt2:
+        dt2 = datetime.now()
+    return (
+        dt1.year == dt2.year
+        and dt1.month == dt2.month
+        and dt1.day == dt2.day
+        and dt1.hour == dt2.hour
+        and dt1.minute == dt2.minute
+    )
 
 
 def is_time_format(

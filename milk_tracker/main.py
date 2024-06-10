@@ -9,7 +9,7 @@ from middleware.auth import AuthMiddleware
 from nicegui import app, ui
 from nicegui.events import ValueChangeEventArguments
 from pydantic import ValidationError
-from utils.time_utils import get_current_date, get_current_time, timedelta_to_hrmin
+from utils.time_utils import get_current_date, get_current_time, time_between, timedelta_to_hrmin
 
 # Configuration
 CONFIG_FILE = Path("config.yaml")
@@ -242,21 +242,68 @@ def main_page() -> None:  # noqa: D103
                 ui.notify("Please check date and start time before locking the meal")
                 return
             force_update_view()
+            meal_rounds_container.clear()
+            with meal_rounds_container:
+                generate_meal_round_list()
         else:
             mt.cancel_ongoing_meal()
+            meal_rounds_container.clear()
             force_update_view()
+
+    def handle_meal_round_action() -> None:
+        if mt.computed.is_ongoing_meal_paused:
+            mt.start_new_meal_round()
+        else:
+            mt.pause_current_meal_round()
+        # Regenerate list of rounds
+        meal_rounds_container.clear()
+        with meal_rounds_container:
+            generate_meal_round_list()
+
+    def generate_meal_round_list() -> ui.list:
+        with ui.list().props("bordered dense") as meal_round_list:
+            for round_number, round_details in enumerate(mt.ongoing_meal.rounds):  # type: ignore[union-attr]
+                with ui.item().props(
+                    f":active='{round_details.is_active}' active-class='bg-primary text-white'"
+                ):
+                    with ui.item_section().classes("w-24"):
+                        ui.item_label(f"Round {round_number+1}")
+                    with ui.item_section().classes("w-28"):
+                        if round_details.is_active:
+                            ui.item_label().bind_text_from(mt.computed, "timer_meal_round")
+                        else:
+                            text = time_between(
+                                round_details.end_datetime, round_details.start_datetime
+                            )  # mypy[arg-type]: end_datetime is not none as the round is not active
+                            if (
+                                mt.computed.is_ongoing_meal_paused
+                                and mt.ongoing_meal
+                                and round_number == len(mt.ongoing_meal.rounds) - 1
+                            ):
+                                text += " (Paused)"
+                            ui.item_label(text)
+
+        return meal_round_list
 
     with ui.column():
         ui.markdown("##### Record meal")
-        switch_lock_start_time = (
-            ui.switch(
-                "Lock start time",
-                value=mt.computed.is_ongoing_meal,
-                on_change=toggle_newmeal_lock,
+        with ui.row().classes("items-stretch"):
+            switch_lock_start_time = (
+                ui.switch(
+                    "Lock start time",
+                    value=mt.computed.is_ongoing_meal,
+                    on_change=toggle_newmeal_lock,
+                )
+                .props("icon='lock_clock' size='lg'")
+                .bind_value_from(mt.computed, "is_ongoing_meal")
             )
-            .props("icon='lock_clock' size='lg'")
-            .bind_value_from(mt.computed, "is_ongoing_meal")
-        )
+            with ui.element().classes("content-center"):
+                ui.button(on_click=handle_meal_round_action).bind_text_from(
+                    mt.computed, "is_ongoing_meal_buttontxt"
+                )
+        with ui.element() as meal_rounds_container:
+            if mt.computed.is_ongoing_meal:
+                generate_meal_round_list()
 
     ui.markdown("## 10 last meals")
 

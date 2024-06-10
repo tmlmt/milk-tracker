@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from pathlib import Path
 from typing import Optional, Union
 
@@ -10,8 +11,8 @@ from nicegui import app
 from pydantic import ValidationError
 from schemas.computed import ComputedValues
 from schemas.config import Config
-from schemas.meal import FinishedMeal, OngoingMeal
-from utils.time_utils import get_current_date, get_current_time
+from schemas.meal import FinishedMeal, MealRound, OngoingMeal
+from utils.time_utils import get_current_date, get_current_time, time_since
 
 
 class AppController:
@@ -136,9 +137,26 @@ class AppController:
         """Update computed value "current_time"."""
         self.computed.current_time = get_current_time(include_sec=True)
 
+    def compute_timer_meal_round(self) -> None:
+        """Update timer for meal round."""
+        # Look for the active round
+        if not self.ongoing_meal:
+            return
+        active_round = next((r for r in self.ongoing_meal.rounds if r.is_active), None)
+        if active_round:
+            self.computed.timer_meal_round = time_since(active_round.start_datetime)
+        else:
+            self.computed.timer_meal_round = "00:00"
+
     def compute_is_ongoing_meal(self) -> None:
         """Update lock state of input field for start_time."""
         self.computed.is_ongoing_meal = bool(self.ongoing_meal)
+        self.computed.is_ongoing_meal_paused = bool(
+            self.ongoing_meal and not any(r.is_active for r in self.ongoing_meal.rounds)
+        )
+        self.computed.is_ongoing_meal_buttontxt = (
+            "New round" if self.computed.is_ongoing_meal_paused else "Pause"
+        )
 
     def compute_all(self) -> None:
         """Compute all computes except current time."""
@@ -146,6 +164,7 @@ class AppController:
         self.compute_latest_meal_info()
         self.compute_time_since_latest_end()
         self.compute_time_since_latest_start()
+        self.compute_timer_meal_round()
 
     # Getters
 
@@ -199,9 +218,23 @@ class AppController:
             self.meals.save_to_file()
         self.compute_all()
 
+    def pause_current_meal_round(self) -> None:
+        """Pause current meal round now."""
+        if self.ongoing_meal:
+            self.ongoing_meal.pause()
+            self.compute_is_ongoing_meal()
+            self.compute_timer_meal_round()
+
+    def start_new_meal_round(self) -> None:
+        """Start new meal round now."""
+        if self.ongoing_meal:
+            self.ongoing_meal.start_new_round()
+            self.compute_is_ongoing_meal()
+
     def do_continuous_update(self, *, force_all: bool = False) -> None:
         """Continuous update of computed values."""
         self.compute_current_time()
+        self.compute_timer_meal_round()
         if self.computed.current_time[-2:] == "00" or force_all:
             self.compute_time_since_latest_end()
             self.compute_time_since_latest_start()

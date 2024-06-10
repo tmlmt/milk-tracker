@@ -1,5 +1,16 @@
+from datetime import datetime, timedelta
+
 import pytest
-from utils.time_utils import force_full_time, is_time_format
+import time_machine
+from utils.time_utils import (
+    force_full_time,
+    is_same_minute,
+    is_time_format,
+    time_between,
+    time_since,
+    timedelta_to_timer,
+)
+from zoneinfo import ZoneInfo
 
 
 def test_valid_time() -> None:
@@ -42,3 +53,39 @@ def test_force_full_time() -> None:
         force_full_time("17:0")
     with pytest.raises(TypeError):
         force_full_time("17h01")
+
+
+def test_timedelta_to_timer() -> None:
+    """Test timedelta_to_timer()."""
+    assert timedelta_to_timer(timedelta(hours=1, minutes=23, seconds=4)) == "01:23:04"
+    assert timedelta_to_timer(timedelta(hours=0, minutes=23, seconds=4)) == "23:04"
+
+
+@time_machine.travel(datetime(2024, 6, 10, 20, 50, tzinfo=ZoneInfo("Europe/Copenhagen")))
+def test_time_since() -> None:
+    """Test time_since()."""
+    now = datetime.now()
+    assert (now.hour, now.minute) == (20, 50)
+    assert time_since(datetime.now()) == "00:00"
+    assert time_since(datetime(2024, 6, 10, 20, 50)) == "00:00"
+    assert time_since(datetime(2024, 6, 10, 20, 30, 35)) == "19:25"
+    assert time_since(datetime(2024, 6, 10, 18, 45)) == "02:05:00"
+
+
+def test_time_between() -> None:
+    """Test time_between()."""
+    assert (
+        time_between(datetime(2024, 6, 10, 21, 52), datetime(2024, 6, 10, 20, 50)) == "01:02:00"
+    )  # fmt: skip
+    assert (
+        time_between(datetime(2024, 6, 10, 21, 52, 12), datetime(2024, 6, 10, 21, 50, 6)) == "02:06"
+    )
+
+
+def test_is_same_minute() -> None:
+    """Test is_same_minute()."""
+    assert is_same_minute(datetime(2024, 6, 10, 21, 52), datetime(2024, 6, 10, 21, 52, 16))
+    assert not is_same_minute(datetime(2024, 6, 10, 21, 52), datetime(2024, 6, 10, 21, 51, 16))
+    with time_machine.travel(datetime(2024, 5, 10, 20, 50, tzinfo=ZoneInfo("Europe/Copenhagen"))):
+        assert is_same_minute(datetime(2024, 5, 10, 20, 50, 25))
+        assert not is_same_minute(datetime(2024, 5, 10, 20, 49, 25))

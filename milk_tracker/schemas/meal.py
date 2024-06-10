@@ -2,9 +2,14 @@ import re
 from datetime import datetime
 from typing import List, Optional, Self
 
-import pandas as pd
 from pydantic import BaseModel, Field, field_validator, model_validator
-from utils.time_utils import force_full_time, get_current_date, get_current_time, is_time_format
+from utils.time_utils import (
+    force_full_time,
+    get_current_date,
+    get_current_time,
+    is_same_minute,
+    is_time_format,
+)
 
 from .base import UpdatableBaseModel
 
@@ -41,26 +46,26 @@ class Meal(BaseModel):
             raise ValueError(msg)
         return force_full_time(v)
 
-    def get_start_datetime(self) -> pd.Timestamp:
+    def get_start_datetime(self) -> datetime:
         """Return start date and time in datetime format.
 
         Returns
         -------
-        pd.Timestamp
+        datetime
             Start date and time
 
         """
-        return pd.to_datetime(str(self.date) + " " + str(self.start_time))
+        return datetime.strptime(f"{self.date} {self.start_time}", "%Y-%m-%d %H:%M:%S")
 
 
 class MealRound(UpdatableBaseModel):
     """Round of meal."""
 
-    start_time: datetime = Field(
+    start_datetime: datetime = Field(
         default_factory=lambda: datetime.now(),
         description="Start datetime of round"
     )  # fmt: skip
-    end_time: Optional[datetime] = Field(default=None, description="End datetime of round")
+    end_datetime: Optional[datetime] = Field(default=None, description="End datetime of round")
     is_active: bool = Field(
         default=True,
         description="Whether the round is active"
@@ -69,10 +74,10 @@ class MealRound(UpdatableBaseModel):
     @model_validator(mode="after")
     def check_end_time_or_active(self) -> Self:
         """Check mutual exclusivity of end_time and is_active."""
-        if self.is_active and self.end_time:
+        if self.is_active and self.end_datetime:
             msg = "There must be no end_time if the round is active"
             raise ValueError(msg)
-        if not self.is_active and not self.end_time:
+        if not self.is_active and not self.end_datetime:
             msg = "There must be an end_time if the round is no longer active"
             raise ValueError(msg)
         return self
@@ -88,9 +93,7 @@ class OngoingMeal(Meal, UpdatableBaseModel):
 
     """
 
-    rounds: Optional[List[MealRound]] = Field(
-        default_factory=lambda: [MealRound()], description="List of meal rounds"
-    )
+    rounds: List[MealRound] = Field(default_factory=list, description="List of meal rounds")
     "List of rounds"
 
     @field_validator("end_time")
@@ -100,6 +103,35 @@ class OngoingMeal(Meal, UpdatableBaseModel):
             msg = "end_time must not be provided or be empty for OngoingMeal"
             raise ValueError(msg)
         return v
+
+    def pause(self) -> None:
+        """Pause latest round and register end time."""
+        if len(self.rounds) == 0:
+            return
+        latest_round = self.rounds[len(self.rounds) - 1]
+        if latest_round.is_active:
+            latest_round.update(end_datetime=datetime.now(), is_active=False)
+
+    def start_new_round(self) -> None:
+        """Start new round after pausing the latest one if necessary."""
+        if any(r.is_active for r in self.rounds):
+            self.pause()
+        self.rounds.append(MealRound())
+
+    @model_validator(mode="after")
+    def auto_start_first_round(self) -> Self:
+        """Make sure OngoingMeal starts with an active meal round."""
+        if len(self.rounds) == 0:
+            # If the meal was started within this minute, we start the
+            # round at this very second, to avoid a surprising discrepanc
+            # between start_time defined as %H:%M and start_datetime with %S
+            first_round_start_datetime = self.get_start_datetime()
+            if is_same_minute(first_round_start_datetime):
+                first_round_start_datetime = first_round_start_datetime.replace(
+                    second=datetime.now().second
+                )
+            self.rounds.append(MealRound(start_datetime=first_round_start_datetime))
+        return self
 
 
 class FinishedMeal(Meal):
