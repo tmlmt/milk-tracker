@@ -1,5 +1,4 @@
 import os
-from datetime import datetime
 from pathlib import Path
 from typing import Optional, Union
 
@@ -11,7 +10,7 @@ from nicegui import app
 from pydantic import ValidationError
 from schemas.computed import ComputedValues
 from schemas.config import Config
-from schemas.meal import FinishedMeal, MealRound, OngoingMeal
+from schemas.meal import FinishedMeal, OngoingMeal
 from utils.time_utils import get_current_date, get_current_time, time_since
 
 
