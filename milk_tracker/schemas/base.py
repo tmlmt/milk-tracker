@@ -3,7 +3,7 @@ import copy
 # See https://stackoverflow.com/a/70277752/4258693
 from collections.abc import Iterator
 from contextlib import contextmanager
-from typing import Any, Dict
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict
 
@@ -17,9 +17,9 @@ class UpdatableBaseModel(BaseModel):
 
     model_config = ConfigDict(validate_assignment=True)
 
-    def update(self, **kwargs: Dict[str, Any]) -> None:
+    def update(self, **kwargs: Any) -> None:  # noqa: ANN401
         """Update the model with multiple assignments."""
-        self.__class__.validate(self.__dict__ | kwargs)
+        self.__class__.model_validate(self.__dict__ | kwargs)
         self.__dict__.update(kwargs)
 
     @contextmanager
@@ -37,14 +37,14 @@ class UpdatableBaseModel(BaseModel):
         """
         original_dict = copy.deepcopy(self.__dict__)
 
-        self.__config__.validate_assignment = False  # type: ignore[attr-defined]
+        self.__class__.model_config["validate_assignment"] = False  # type: ignore[attr-defined]
         try:
             yield
         finally:
-            self.__config__.validate_assignment = True  # type: ignore[attr-defined]
+            self.__class__.model_config["validate_assignment"] = True  # type: ignore[attr-defined]
 
         try:
-            self.__class__.validate(self.__dict__)
+            self.__class__.model_validate(self.__dict__)
         except:
             self.__dict__.update(original_dict)
             raise
