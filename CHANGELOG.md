@@ -1,6 +1,33 @@
 # Changelog
 
 ---
+## [2.0.0-beta.3](https://github.com/tmlmt/milk-tracker/compare/v2.0.0-beta.2..v2.0.0-beta.3) - 2024-06-10
+
+### 🚀 Enhancements
+
+- add summary graphs - ([17c6c4c](https://github.com/tmlmt/milk-tracker/commit/17c6c4c93cdf71ce4beb7ad19296b44e3a851588)) - Thomas Lamant
+
+### 🩹 Fixes
+
+- **(force_update)** include update of summary graphs - ([2050625](https://github.com/tmlmt/milk-tracker/commit/2050625dc6101ff24ae7dc97b671109a64bca817)) - Thomas Lamant
+
+### 🚜 Refactor
+
+- move additional css to external file - ([3253bcb](https://github.com/tmlmt/milk-tracker/commit/3253bcb461d17eff5fa62f7ef760e07924584a7f)) - Thomas Lamant
+
+### 🎨 Style
+
+- **(graphs)** consistent use of words and case - ([de56b34](https://github.com/tmlmt/milk-tracker/commit/de56b34b9c20114607e90b46521e8159b7d8951c)) - Thomas Lamant
+- **(graphs)** improve responsiveness - ([d9e1fce](https://github.com/tmlmt/milk-tracker/commit/d9e1fce9f6de013473d776d4da661732fbb2ba4f)) - Thomas Lamant
+- **(tables)** improve sticky cells color - ([c8cc4c0](https://github.com/tmlmt/milk-tracker/commit/c8cc4c096d3be01010b4cb8351f8e09e291ae425)) - Thomas Lamant
+
+### 🏡 Chore
+
+- **(app)** remove print statements - ([419de0a](https://github.com/tmlmt/milk-tracker/commit/419de0aa4b3c7e8eae82a5dc44cc906f768cffaa)) - Thomas Lamant
+- **(coverage)** update badge - ([46eed25](https://github.com/tmlmt/milk-tracker/commit/46eed252782298b9836b339a7990327e607d439e)) - github-actions[bot]
+- **(main)** remove unused variables - ([6b9d08e](https://github.com/tmlmt/milk-tracker/commit/6b9d08e9ae52b0a0699db5b499b8a6587b69bfae)) - Thomas Lamant
+
+---
 ## [2.0.0-beta.2](https://github.com/tmlmt/milk-tracker/compare/v2.0.0-beta.1..v2.0.0-beta.2) - 2024-06-07
 
 ### 🤖 CI
