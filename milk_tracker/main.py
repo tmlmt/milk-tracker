@@ -212,7 +212,7 @@ def main_page() -> None:  # noqa: D103
                     on_click=lambda: new_end_time.set_value(get_current_time(include_sec=False)),
                 ).classes("h-full")
                 with ui.input().props(
-                    "mask='time' :rules='[ (val, rules) => rules.time(val) || \"Invalid time\"]' "
+                    "mask='time' :rules='[ (val, rules) => val == \"\" | rules.time(val) || \"Invalid time\"]' "
                     "lazy-rules"
                 ).classes("w-24") as new_end_time:
                     with ui.menu().props("no-parent-event") as menu_new_end_time:
