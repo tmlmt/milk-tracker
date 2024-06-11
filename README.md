@@ -1,7 +1,11 @@
 # Milk Tracker
 
-![Release](https://img.shields.io/github/v/release/tmlmt/milk-tracker?color=%23007ec6
- "Version") ![Coverage](./coverage.svg "Coverage")
+![GitHub License](https://img.shields.io/github/license/tmlmt/milk-tracker?color=green) ![Release](https://img.shields.io/github/v/release/tmlmt/milk-tracker?color=blue "Version") ![Coverage](./coverage.svg "Coverage")
+
+<p float="left">
+    <img src="screenshot-01.png" width="400" />
+    <img src="screenshot-02.png" width="400" />
+</p>
 
 Basic breastfeeding data analysis and tracking
 
@@ -16,6 +20,7 @@ The idea of this app stemmed from the need to track and visualize breastfeeding 
 - keep track of changes using [git-cliff](https://github.com/orhun/git-cliff)
 - managing a python environment using [micromamba](https://mamba.readthedocs.io/en/latest/user_guide/micromamba.html)
 - Testing the code prior to releasing using [pytest](https://pytest.org/)
+- Calculating the coverage of tests using [coverage](https://coverage.readthedocs.io/en/latest/)
 - Typing python code and checking it with [mypy](https://mypy.readthedocs.io/en/stable/)
 
 Huge thanks to the Open Source community for providing such great tools to the world.
@@ -25,17 +30,16 @@ Huge thanks to the Open Source community for providing such great tools to the w
 - Protect access with password
 - Record meals start and end times
 - Lock start time of new meal
+- Keep track of meal rounds during ongoing meal
+- Reminders for daily intake of vitamins
 - See latest three days trends in graphs
 - See daily stats in a table
 
 ## Backlog
 
-- Better responsiveness
-- Keep track of meal rounds during ongoing meal
-- More daily stats and visualisation in graphs
-- Remember daily intake of vitamins
 - Keep a log of daily observations
 - Edit and delete any meal
+- Prediction of next meal's time and duration
 
 ## License
 
