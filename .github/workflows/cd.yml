@@ -65,3 +65,26 @@ jobs:
             systemctl --user stop milktracker
           SCRIPT_AFTER: |
             systemctl --user start milktracker
+
+  conditional-deploy-app:
+    if: github.event.inputs.deploy_env == 'n'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch_name }}
+      - name: Deploy to Production server
+        uses: easingthemes/ssh-deploy@main
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_USER: ${{ secrets.SSH_USER }}
+          REMOTE_PORT: ${{ secrets.SSH_PORT }}
+          SOURCE: "milk_tracker"
+          EXCLUDE: "assets/journal.*"
+          TARGET: "/home/${{ secrets.SSH_USER }}/www"
+          SCRIPT_BEFORE: |
+            systemctl --user stop milktracker
+          SCRIPT_AFTER: |
+            systemctl --user start milktracker
