@@ -1,6 +1,31 @@
 # Changelog
 
 ---
+## [2.0.0](https://github.com/tmlmt/milk-tracker/compare/v2.0.0-beta.4..v2.0.0) - 2024-06-11
+
+### 🚀 Enhancements
+
+- reminders for vitamin intake - ([ec52212](https://github.com/tmlmt/milk-tracker/commit/ec522127f65346b5a4bb1ca49edcf6653f5085db)) - Thomas Lamant
+
+### 🩹 Fixes
+
+- **(record_meal)** only enable button when meal is ongoing - ([c93ca28](https://github.com/tmlmt/milk-tracker/commit/c93ca2866c5de3cd4ee826a32641db40bec9bee6)) - Thomas Lamant
+
+### 🤖 CI
+
+- **(cd)** run jobs sequentially - ([f1edff0](https://github.com/tmlmt/milk-tracker/commit/f1edff021c5cefb3cb0eb547c0a68cfd737d4a98)) - Thomas Lamant
+- **(cd)** switch deploy-end to faster rsync script - ([83e9121](https://github.com/tmlmt/milk-tracker/commit/83e91214c5c9c7adfdbe2ac14c207d45dbb1f2b6)) - Thomas Lamant
+- **(coverage)** bump tj-actions/verify-changed-files to v20 - ([ae7ab7a](https://github.com/tmlmt/milk-tracker/commit/ae7ab7a5737e107cc8ea08eb44e6493cf73317f9)) - Thomas Lamant
+
+### 🏡 Chore
+
+- **(cliff)** skip changelog and release commits - ([7cde869](https://github.com/tmlmt/milk-tracker/commit/7cde8695699c4e5f0970fc059e991d79b476cb05)) - Thomas Lamant
+- **(coverage)** update badge - ([244f350](https://github.com/tmlmt/milk-tracker/commit/244f35086949bcc85ff06626d1623d3b96e7f3b5)) - github-actions[bot]
+- **(pyproject)** add project details as per PEP 621 - ([d7cf92f](https://github.com/tmlmt/milk-tracker/commit/d7cf92fffadb07fea5f07ce838719575c5900679)) - Thomas Lamant
+- upload scripts - ([bd13ebe](https://github.com/tmlmt/milk-tracker/commit/bd13ebeb7f922fe67caedaec9e9bf48ee052ed88)) - Thomas Lamant
+- update README - ([a62e234](https://github.com/tmlmt/milk-tracker/commit/a62e234b9ed39d25bf08fa14e1ee7966a04534e2)) - Thomas Lamant
+
+---
 ## [2.0.0-beta.4](https://github.com/tmlmt/milk-tracker/compare/v2.0.0-beta.3..v2.0.0-beta.4) - 2024-06-11
 
 ### 🚀 Enhancements

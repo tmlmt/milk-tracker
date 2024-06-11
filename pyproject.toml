@@ -1,6 +1,6 @@
 [project]
 name = "milk-tracker"
-version = "1.0.0"
+version = "2.0.0"
 description = "Basic breastfeeding data analysis and tracking"
 authors = [{ name = "Thomas Lamant", email = "tom@tmlmt.com"}]
 readme = "README.md"
