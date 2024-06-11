@@ -1,0 +1,12 @@
+[Unit]
+Description=Milk Tracker (NiceGUI)
+Requires=var.mount
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/var/www/milktracker/milk_tracker
+ExecStart=/usr/local/bin/micromamba run -n milktracker python main.py
+
+[Install]
+WantedBy=milti-user.target
