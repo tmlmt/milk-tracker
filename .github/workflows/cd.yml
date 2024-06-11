@@ -43,6 +43,7 @@ jobs:
             micromamba env create -y -f /home/${{ secrets.SSH_USER }}/env.yaml 
 
   deploy-app:
+    needs: deploy-env
     runs-on: ubuntu-latest
 
     steps:
