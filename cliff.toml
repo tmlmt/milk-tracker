@@ -73,6 +73,8 @@ commit_parsers = [
     { message = "^build", group = "<!-- 09 -->📦 Build" },
     { message = "^ci", group = "<!-- 10 -->🤖 CI" },
     { message = "^chore\\(version\\):", skip = true },
+    { message = "^chore\\(changelog\\):", skip = true },
+    { message = "^chore\\(release\\):", skip = true },
     { message = "^chore\\(ignore\\):", skip = true },
     { message = "^chore", group = "<!-- 11 -->🏡 Chore" },
     { body = ".*security", group = "<!-- 12 -->🛡️ Security" },
