@@ -251,7 +251,7 @@ def page(mt: AppController) -> None:
             with ui.element().classes("content-center"):
                 ui.button(on_click=handle_meal_round_action).bind_text_from(
                     mt.computed, "is_ongoing_meal_buttontxt"
-                )
+                ).bind_enabled_from(mt.computed, "is_ongoing_meal")
         with ui.element() as meal_rounds_container:
             if mt.computed.is_ongoing_meal:
                 generate_meal_round_list()
