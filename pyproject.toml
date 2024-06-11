@@ -1,2 +1,11 @@
+[project]
+name = "milk-tracker"
+version = "1.0.0"
+description = "Basic breastfeeding data analysis and tracking"
+authors = [{ name = "Thomas Lamant", email = "tom@tmlmt.com"}]
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.11"
+
 [tool.coverage.run]
 omit = ["**/__init__.py", "**/tests/*"]
