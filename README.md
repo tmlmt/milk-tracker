@@ -41,6 +41,27 @@ Huge thanks to the Open Source community for providing such great tools to the w
 - Edit and delete any meal
 - Prediction of next meal's time and duration
 
+## Self-hosting
+
+The following instructions rely on the use of [micromamba](https://mamba.readthedocs.io/en/latest/user_guide/micromamba.html) for managing python environment and [nginx](https://nginx.org) for the web server. 
+
+1. Use `env.yaml` file to create your environment: `micromamba env create -f env.yaml`
+2. Copy `milk_tracker` folder in your web server area, e.g. `/var/www/`
+3. Create an `.env` file within that folder with the following content: 
+
+```
+APP_PORT=<port_number>
+PASSWORD=<argon2 password hash as login>
+STORAGE_SECRET=<passphrase to protect your storage area>
+```
+
+4. Customize the `milk_tracker/config.yaml` file
+5. Use `scripts/milk-tracker.conf` as example to configure the redirection of http requests to your app using nginx and your own domain
+6. Use `scripts/milk-tracker.service` as example to configure a systemd unit to manage the start/stop of the app
+7. Enable the unit, e.g. `systemctl --user enable milk-tracker.service` if you're running the app using a specific user and choose to run user units
+8. Start the app, e.g. `systemctl --user start milk-tracker.service` 
+9. Go to [https://<your_domain>:<port_number>](https://<your_domain>:<port_number>) and start tracking :-)
+
 ## License
 
 MIT License
