@@ -1,6 +1,32 @@
 # Changelog
 
 ---
+## [2.0.0-beta.4](https://github.com/tmlmt/milk-tracker/compare/v2.0.0-beta.3..v2.0.0-beta.4) - 2024-06-11
+
+### 🚀 Enhancements
+
+- track and time meal rounds when recording a meal - ([c92b43e](https://github.com/tmlmt/milk-tracker/commit/c92b43eb273fafe4db0e52e9380f6ab50249f074)) - Thomas Lamant
+
+### 🩹 Fixes
+
+- **(schemas)** UpdatableModel does not work with pydantic v2 - ([083e608](https://github.com/tmlmt/milk-tracker/commit/083e6086d92bbf9ec99bcae7356af73f1c2ec134)) - Thomas Lamant
+- end time validation fails after adding a meal - ([fc3f1d9](https://github.com/tmlmt/milk-tracker/commit/fc3f1d9bb10ac9b8ade847fabf5ff8e8a3c3ae25)) - Thomas Lamant
+
+### 🚜 Refactor
+
+- split into pages - ([5dc26ee](https://github.com/tmlmt/milk-tracker/commit/5dc26eea78520636fe2e989f5079505fa874d429)) - Thomas Lamant
+
+### 🤖 CI
+
+- optionally (re)deploy environment - ([c719631](https://github.com/tmlmt/milk-tracker/commit/c7196315255cf7ccf218bba207e29cbecc6404bd)) - Thomas Lamant
+
+### 🏡 Chore
+
+- **(coverage)** remove test files from stats - ([ae9dbe2](https://github.com/tmlmt/milk-tracker/commit/ae9dbe2d0b81477b62dc448e9541f2ea4be65101)) - Thomas Lamant
+- **(deps)** update all dependencies - ([1ee401e](https://github.com/tmlmt/milk-tracker/commit/1ee401e7868152691d0e32efba82ef4cdd706cd6)) - Thomas Lamant
+- remove unused imports and lint - ([0cac7d0](https://github.com/tmlmt/milk-tracker/commit/0cac7d028b634687f450afa70fc46617a6dc4338)) - Thomas Lamant
+
+---
 ## [2.0.0-beta.3](https://github.com/tmlmt/milk-tracker/compare/v2.0.0-beta.2..v2.0.0-beta.3) - 2024-06-10
 
 ### 🚀 Enhancements
