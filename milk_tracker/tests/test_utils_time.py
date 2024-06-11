@@ -6,6 +6,7 @@ from utils.time_utils import (
     force_full_time,
     is_same_minute,
     is_time_format,
+    is_today,
     time_between,
     time_since,
     timedelta_to_timer,
@@ -89,3 +90,10 @@ def test_is_same_minute() -> None:
     with time_machine.travel(datetime(2024, 5, 10, 20, 50, tzinfo=ZoneInfo("Europe/Copenhagen"))):
         assert is_same_minute(datetime(2024, 5, 10, 20, 50, 25))
         assert not is_same_minute(datetime(2024, 5, 10, 20, 49, 25))
+
+
+@time_machine.travel(datetime(2024, 6, 10, 20, 50, tzinfo=ZoneInfo("Europe/Copenhagen")))
+def test_is_today() -> None:
+    """Test is_today()."""
+    assert is_today("2024-06-10")
+    assert not is_today("2024-06-11")

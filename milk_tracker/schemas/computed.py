@@ -42,4 +42,12 @@ class ComputedValues(UpdatableBaseModel):
     timer_meal_round: Annotated[str, StringConstraints(pattern=r"^(\d{2}:)?\d{2}:\d{2}$")] = Field(
         default="00:00",
         description="Timer for meal round in format HH:mm",
-    )
+    )  # fmt: skip
+    has_mother_taken_vitamins_today: bool = Field(
+        default=False,
+        description="Whether the mother has taken her vitamins today"
+    )  # fmt: skip
+    has_baby_taken_vitamins_today: bool = Field(
+        default=False,
+        description="Weather baby has taken their vitamins today"
+    )  # fmt: skip

@@ -11,7 +11,7 @@ from pydantic import ValidationError
 from schemas.computed import ComputedValues
 from schemas.config import Config
 from schemas.meal import FinishedMeal, OngoingMeal
-from utils.time_utils import get_current_date, get_current_time, time_since
+from utils.time_utils import get_current_date, get_current_time, is_today, time_since
 
 
 class AppController:
@@ -29,6 +29,12 @@ class AppController:
         self._ongoing_meal: Union[OngoingMeal, None] = None
         if app.storage.general.get("ongoing_meal", None):
             self._ongoing_meal = OngoingMeal(**app.storage.general.get("ongoing_meal", None))
+        self.latest_date_vitamins_baby = app.storage.general.get("latest_date_vitamins_baby", None)
+        self.latest_date_vitamins_mother = app.storage.general.get(
+            "latest_date_vitamins_mother", None
+        )
+        self.compute_has_baby_taken_vitamins_today()
+        self.compute_has_mother_taken_vitamins_today()
 
     # Properties getters and setters
 
@@ -157,6 +163,20 @@ class AppController:
             "New round" if self.computed.is_ongoing_meal_paused else "Pause"
         )
 
+    def compute_has_baby_taken_vitamins_today(self) -> None:
+        """Boolean for whether baby has taken vitamins today."""
+        if self.latest_date_vitamins_baby and is_today(self.latest_date_vitamins_baby):
+            self.computed.has_baby_taken_vitamins_today = True
+        else:
+            self.computed.has_baby_taken_vitamins_today = False
+
+    def compute_has_mother_taken_vitamins_today(self) -> None:
+        """Boolean for whether mother has taken vitamins today."""
+        if self.latest_date_vitamins_mother and is_today(self.latest_date_vitamins_mother):
+            self.computed.has_mother_taken_vitamins_today = True
+        else:
+            self.computed.has_mother_taken_vitamins_today = False
+
     def compute_all(self) -> None:
         """Compute all computes except current time."""
         self.compute_is_ongoing_meal()
@@ -229,6 +249,20 @@ class AppController:
         if self.ongoing_meal:
             self.ongoing_meal.start_new_round()
             self.compute_is_ongoing_meal()
+
+    def confirm_vitamins_baby(self) -> None:
+        """Update latest date baby has taken vitamins to today's date."""
+        self.latest_date_vitamins_baby = get_current_date()
+        app.storage.general.update({"latest_date_vitamins_baby": self.latest_date_vitamins_baby})
+        self.compute_has_baby_taken_vitamins_today()
+
+    def confirm_vitamins_mother(self) -> None:
+        """Update latest date mother has taken vitamins to today's date."""
+        self.latest_date_vitamins_mother = get_current_date()
+        app.storage.general.update(
+            {"latest_date_vitamins_mother": self.latest_date_vitamins_mother}
+        )
+        self.compute_has_mother_taken_vitamins_today()
 
     def do_continuous_update(self, *, force_all: bool = False) -> None:
         """Continuous update of computed values."""

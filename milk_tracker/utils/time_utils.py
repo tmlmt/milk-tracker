@@ -224,3 +224,20 @@ def get_current_date() -> str:
 
     """
     return datetime.now().date().strftime("%Y-%m-%d")
+
+
+def is_today(test_date: str) -> bool:
+    """Test whether a date is today's date.
+
+    Parameters
+    ----------
+    test_date : str
+        Date to test in %Y-%m-%d format
+
+    Returns
+    -------
+    bool
+        True or False
+
+    """
+    return get_current_date() == test_date

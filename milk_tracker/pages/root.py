@@ -90,6 +90,16 @@ def page(mt: AppController) -> None:
 
     ui.markdown("## Quick check")
 
+    def confirm_vitamins_baby() -> None:
+        if not mt.computed.has_baby_taken_vitamins_today:
+            mt.confirm_vitamins_baby()
+            checkmark_vitamins_baby.props("round color='secondary'").update()
+
+    def confirm_vitamins_mother() -> None:
+        if not mt.computed.has_mother_taken_vitamins_today:
+            mt.confirm_vitamins_mother()
+            checkmark_vitamins_mother.props("round color='secondary'").update()
+
     with ui.row().classes("items-stretch"):
         with ui.card():
             ui.markdown("##### Latest meal")
@@ -114,6 +124,24 @@ def page(mt: AppController) -> None:
                 ui.label().bind_text_from(
                     mt.computed, "time_since_latest_start", backward=timedelta_to_hrmin
                 ).classes("text-3xl")
+        with ui.card():
+            ui.markdown("##### Vitamin 👶")
+            ui.separator()
+            with ui.card_section().classes("h-full w-full flex justify-center content-center"):
+                checkmark_vitamins_baby = ui.button(
+                    icon="done", on_click=confirm_vitamins_baby
+                ).props(
+                    f"round color='{"secondary" if mt.computed.has_baby_taken_vitamins_today else "grey"}'"  # noqa: E501
+                )
+        with ui.card():
+            ui.markdown("##### Vitamins 👩‍🍼")
+            ui.separator()
+            with ui.card_section().classes("h-full w-full flex justify-center content-center"):
+                checkmark_vitamins_mother = ui.button(
+                    icon="done", on_click=confirm_vitamins_mother
+                ).props(
+                    f"round color='{"secondary" if mt.computed.has_mother_taken_vitamins_today else "grey"}'"  # noqa: E501
+                )
 
     ui.markdown("## New meal")
 
