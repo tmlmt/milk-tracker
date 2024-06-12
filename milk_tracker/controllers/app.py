@@ -177,7 +177,7 @@ class AppController:
         else:
             self.computed.has_mother_taken_vitamins_today = False
 
-    def compute_all(self) -> None:
+    def compute_all_meal(self) -> None:
         """Compute all computes except current time."""
         self.compute_is_ongoing_meal()
         self.compute_latest_meal_info()
@@ -206,7 +206,7 @@ class AppController:
         """
         self.ongoing_meal = OngoingMeal(date=date, start_time=start_time)
         self.meals.add(self.ongoing_meal)
-        self.compute_all()
+        self.compute_all_meal()
 
     def save_ongoing_meal(self) -> None:
         """Save ongoing meal to General Storage."""
@@ -220,14 +220,14 @@ class AppController:
         """Remove ongoing meal from state and dataset."""
         self.meals.delete_latest("ongoing")
         self.ongoing_meal = None
-        self.compute_all()
+        self.compute_all_meal()
 
     def add_finished_meal(self, date: str, start_time: str, end_time: str) -> None:
         """Add finished meal to dataset and update computed values."""
         meal = FinishedMeal(date=date, start_time=start_time, end_time=end_time)
         self.meals.add(meal)
         self.meals.save_to_file()
-        self.compute_all()
+        self.compute_all_meal()
 
     def delete_latest_meal(self) -> None:
         """Delete latest meal from dataset and update computed values."""
@@ -235,7 +235,7 @@ class AppController:
         # If there's an ongoing meal, we're just removing it from the live table
         if not self.ongoing_meal:
             self.meals.save_to_file()
-        self.compute_all()
+        self.compute_all_meal()
 
     def pause_current_meal_round(self) -> None:
         """Pause current meal round now."""
@@ -271,3 +271,5 @@ class AppController:
         if self.computed.current_time[-2:] == "00" or force_all:
             self.compute_time_since_latest_end()
             self.compute_time_since_latest_start()
+            self.compute_has_baby_taken_vitamins_today()
+            self.compute_has_mother_taken_vitamins_today()
