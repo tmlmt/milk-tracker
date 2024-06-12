@@ -1,6 +1,21 @@
 # Changelog
 
 ---
+## [2.0.1](https://github.com/tmlmt/milk-tracker/compare/v2.0.0..v2.0.1) - 2024-06-12
+
+### 🩹 Fixes
+
+- **(controller)** vitamin checks not updated after day change - ([71f00ef](https://github.com/tmlmt/milk-tracker/commit/71f00ef594d85abfba96ac864cce2239388a61e5)) - Thomas Lamant
+
+### 🤖 CI
+
+- **(cd)** run deploy-app only when we don't deploy-env - ([7bec6ae](https://github.com/tmlmt/milk-tracker/commit/7bec6aee2b9dd4e2a5298832bafb66d0927d78af)) - Thomas Lamant
+
+### 🏡 Chore
+
+- **(README)** add instructions for self-hosting - ([0b142d6](https://github.com/tmlmt/milk-tracker/commit/0b142d6e9d3bd4953ae4e7f7dfdaf99ff74467e0)) - Thomas Lamant
+
+---
 ## [2.0.0](https://github.com/tmlmt/milk-tracker/compare/v2.0.0-beta.4..v2.0.0) - 2024-06-11
 
 ### 🚀 Enhancements
