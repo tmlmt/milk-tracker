@@ -109,17 +109,27 @@ def page(mt: AppController) -> None:
         with ui.card():
             ui.markdown("##### Previous end")
             ui.separator()
-            with ui.card_section().classes("h-full content-center"):
+            with ui.card_section().classes(
+                "flex flex-row h-full w-full justify-center content-center"
+            ):
                 ui.label().bind_text_from(
                     mt.computed, "time_since_latest_end", backward=timedelta_to_hrmin
                 ).classes("text-3xl")
+                ui.icon("lock", color="grey").bind_visibility_from(
+                    mt.computed, "is_ongoing_meal"
+                ).classes("w-full self-center")
         with ui.card():
             ui.markdown("##### Previous start")
             ui.separator()
-            with ui.card_section().classes("h-full content-center px-2"):
+            with ui.card_section().classes(
+                "flex flex-row h-full w-full justify-center content-center"
+            ):
                 ui.label().bind_text_from(
                     mt.computed, "time_since_latest_start", backward=timedelta_to_hrmin
                 ).classes("text-3xl")
+                ui.icon("lock", color="grey").bind_visibility_from(
+                    mt.computed, "is_ongoing_meal"
+                ).classes("w-full self-center")
         with ui.card():
             ui.markdown("##### Vitamin 👶")
             ui.separator()
