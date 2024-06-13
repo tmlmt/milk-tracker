@@ -25,12 +25,8 @@ def page(mt: AppController) -> None:
     mt.load_data()
 
     def force_update_view() -> None:
-        table_latest_meals_container.clear()
-        with table_latest_meals_container:
-            generate_latest_meals_table()
-        table_summary_container.clear()
-        with table_summary_container:
-            generate_summary_table()
+        generate_latest_meals_table.refresh()
+        generate_summary_table.refresh()
         figure_duration.update_figure(
             generate_graph(
                 "duration_min",
@@ -221,9 +217,7 @@ def page(mt: AppController) -> None:
                 ui.notify("Please check date and start time before locking the meal")
                 return
             force_update_view()
-            meal_rounds_container.clear()
-            with meal_rounds_container:
-                generate_meal_round_list()
+            generate_meal_round_list.refresh()
         else:
             mt.cancel_ongoing_meal()
             meal_rounds_container.clear()
@@ -235,10 +229,9 @@ def page(mt: AppController) -> None:
         else:
             mt.pause_current_meal_round()
         # Regenerate list of rounds
-        meal_rounds_container.clear()
-        with meal_rounds_container:
-            generate_meal_round_list()
+        generate_meal_round_list.refresh()
 
+    @ui.refreshable
     def generate_meal_round_list() -> ui.list:
         with ui.list().props("bordered dense") as meal_round_list:
             for round_number, round_details in enumerate(mt.ongoing_meal.rounds):  # type: ignore[union-attr]
@@ -280,12 +273,13 @@ def page(mt: AppController) -> None:
                 ui.button(on_click=handle_meal_round_action).bind_text_from(
                     mt.computed, "is_ongoing_meal_buttontxt"
                 ).bind_enabled_from(mt.computed, "is_ongoing_meal")
-        with ui.element() as meal_rounds_container:
-            if mt.computed.is_ongoing_meal:
+        if mt.computed.is_ongoing_meal:
+            with ui.element() as meal_rounds_container:
                 generate_meal_round_list()
 
     ui.markdown("## 10 last meals")
 
+    @ui.refreshable
     def generate_latest_meals_table() -> ui.table:
         return ui.table.from_pandas(
             mt.meals.df.tail(10)[
@@ -312,8 +306,7 @@ def page(mt: AppController) -> None:
             pagination=0,
         ).props("table-class='sticky-header-column-table' virtual-scroll hide-pagination")
 
-    with ui.element() as table_latest_meals_container:
-        generate_latest_meals_table()
+    generate_latest_meals_table()
 
     def delete_latest_meal() -> None:
         mt.delete_latest_meal()
@@ -411,6 +404,7 @@ def page(mt: AppController) -> None:
 
     ui.markdown("## Statistics")
 
+    @ui.refreshable
     def generate_summary_table() -> ui.table:
         mt.meals.compute_summary()
         return ui.table.from_pandas(mt.meals.df_summary_txt, pagination=0).props(  # type: ignore[arg-type]
@@ -418,8 +412,7 @@ def page(mt: AppController) -> None:
         )
 
     # Display the summary DataFrame
-    with ui.element() as table_summary_container:
-        generate_summary_table()
+    generate_summary_table()
 
     def generate_summary_graph(
         field: Literal["meals", "duration", "previous_end"], title: str, yaxis_title: str
