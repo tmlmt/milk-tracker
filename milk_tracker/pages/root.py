@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, List, Literal
+from typing import Any, Dict, List, Literal, Optional
 
 from controllers.app import AppController
 from nicegui import ui
@@ -252,7 +252,9 @@ def page(mt: AppController) -> None:
         generate_meal_round_list.refresh()
 
     @ui.refreshable
-    def generate_meal_round_list() -> ui.list:
+    def generate_meal_round_list() -> Optional[ui.list]:
+        if not mt.computed.is_ongoing_meal:
+            return None
         with ui.list().props("bordered dense") as meal_round_list:
             for round_number, round_details in enumerate(mt.ongoing_meal.rounds):  # type: ignore[union-attr]
                 with ui.item().props(
@@ -293,9 +295,8 @@ def page(mt: AppController) -> None:
                 ui.button(on_click=handle_meal_round_action).bind_text_from(
                     mt.computed, "is_ongoing_meal_buttontxt"
                 ).bind_enabled_from(mt.computed, "is_ongoing_meal")
-        if mt.computed.is_ongoing_meal:
-            with ui.element() as meal_rounds_container:
-                generate_meal_round_list()
+        with ui.element() as meal_rounds_container:
+            generate_meal_round_list()
 
     ui.markdown("## 10 last meals")
 
