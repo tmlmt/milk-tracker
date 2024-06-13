@@ -151,6 +151,15 @@ def page(mt: AppController) -> None:
 
     ui.markdown("## New meal")
 
+    def switch_focus_to_end_time() -> None:
+        if len(new_start_time.value) == 5:
+            # Ref: https://github.com/zauberzeug/nicegui/discussions/2574
+            ui.run_javascript(f"getElement({new_end_time.id}).$refs.qRef.focus()")
+
+    def switch_focus_to_start_time() -> None:
+        if len(new_end_time.value) == 0:
+            ui.run_javascript(f"getElement({new_start_time.id}).$refs.qRef.focus()")
+
     with ui.row().classes("items-stretch"):
         with ui.column():
             ui.markdown("##### Date")
@@ -175,7 +184,8 @@ def page(mt: AppController) -> None:
                     mt.computed, "is_ongoing_meal", backward=lambda x: not x
                 ).classes("h-full")
                 with ui.input(
-                    value=mt.get_input_default_value_newmeal_start_time()
+                    value=mt.get_input_default_value_newmeal_start_time(),
+                    on_change=switch_focus_to_end_time,
                 ).bind_enabled_from(mt.computed, "is_ongoing_meal", backward=lambda x: not x).props(
                     "mask='time' :rules='[ (val, rules) => rules.time(val) || \"Invalid time\"]' "
                     "lazy-rules"
@@ -195,7 +205,7 @@ def page(mt: AppController) -> None:
                     "Now",
                     on_click=lambda: new_end_time.set_value(get_current_time(include_sec=False)),
                 ).classes("h-full")
-                with ui.input().props(
+                with ui.input(on_change=switch_focus_to_start_time).props(
                     "mask='time' "
                     ':rules=\'[ (val, rules) => val == "" | rules.time(val) || "Invalid time"]\' '
                     "lazy-rules"
