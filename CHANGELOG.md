@@ -1,6 +1,18 @@
 # Changelog
 
 ---
+## [2.1.0](https://github.com/tmlmt/milk-tracker/compare/v2.0.1..v2.1.0) - 2024-06-13
+
+### 🚀 Enhancements
+
+- add lock icon in previous start/end when meal is locked - ([619d81f](https://github.com/tmlmt/milk-tracker/commit/619d81fea5d64f23712730f0d8d2d0c5eccae84b)) - Thomas Lamant
+- auto focus while typing start and end times of new meal - ([1b5eee6](https://github.com/tmlmt/milk-tracker/commit/1b5eee6cd669d2a80ff78ccde8042fe0a785869d)) - Thomas Lamant
+
+### 🚜 Refactor
+
+- make use of refreshable functions - ([92338bc](https://github.com/tmlmt/milk-tracker/commit/92338bc65114721bd20c322a09b2dfe0ac0dc5de)) - Thomas Lamant
+
+---
 ## [2.0.1](https://github.com/tmlmt/milk-tracker/compare/v2.0.0..v2.0.1) - 2024-06-12
 
 ### 🩹 Fixes
