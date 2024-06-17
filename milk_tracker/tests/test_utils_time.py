@@ -4,6 +4,7 @@ import pytest
 import time_machine
 from utils.time_utils import (
     force_full_time,
+    is_before_end_of_tomorrow,
     is_same_minute,
     is_time_format,
     is_today,
@@ -79,15 +80,22 @@ def test_time_between() -> None:
         time_between(datetime(2024, 6, 10, 21, 52), datetime(2024, 6, 10, 20, 50)) == "01:02:00"
     )  # fmt: skip
     assert (
-        time_between(datetime(2024, 6, 10, 21, 52, 12), datetime(2024, 6, 10, 21, 50, 6)) == "02:06"
+        time_between(datetime(2024, 6, 10, 21, 52, 12), datetime(2024, 6, 10, 21, 50, 6))
+        == "02:06"
     )
 
 
 def test_is_same_minute() -> None:
     """Test is_same_minute()."""
-    assert is_same_minute(datetime(2024, 6, 10, 21, 52), datetime(2024, 6, 10, 21, 52, 16))
-    assert not is_same_minute(datetime(2024, 6, 10, 21, 52), datetime(2024, 6, 10, 21, 51, 16))
-    with time_machine.travel(datetime(2024, 5, 10, 20, 50, tzinfo=ZoneInfo("Europe/Copenhagen"))):
+    assert is_same_minute(
+        datetime(2024, 6, 10, 21, 52), datetime(2024, 6, 10, 21, 52, 16)
+    )
+    assert not is_same_minute(
+        datetime(2024, 6, 10, 21, 52), datetime(2024, 6, 10, 21, 51, 16)
+    )
+    with time_machine.travel(
+        datetime(2024, 5, 10, 20, 50, tzinfo=ZoneInfo("Europe/Copenhagen"))
+    ):
         assert is_same_minute(datetime(2024, 5, 10, 20, 50, 25))
         assert not is_same_minute(datetime(2024, 5, 10, 20, 49, 25))
 
@@ -97,3 +105,14 @@ def test_is_today() -> None:
     """Test is_today()."""
     assert is_today("2024-06-10")
     assert not is_today("2024-06-11")
+
+
+@time_machine.travel(datetime(2024, 6, 10, 20, 50, tzinfo=ZoneInfo("Europe/Copenhagen")))
+def test_is_before_end_of_tomorrow() -> None:
+    """Test is_before_end_of_tomorrow()."""
+    assert is_before_end_of_tomorrow(datetime(2024, 6, 9, 12, 15))
+    assert is_before_end_of_tomorrow(datetime(2024, 6, 10, 23, 15))
+    assert is_before_end_of_tomorrow(datetime(2024, 6, 11, 22, 15))
+    assert is_before_end_of_tomorrow(datetime(2024, 6, 11, 23, 59))
+    assert not is_before_end_of_tomorrow(datetime(2024, 6, 12, 0, 0, 0))
+    assert not is_before_end_of_tomorrow(datetime(2024, 6, 12, 0, 1))

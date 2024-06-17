@@ -68,7 +68,9 @@ def timedelta_to_timer(td: timedelta) -> str:
     hours, remainder = divmod(int(td.total_seconds()), 60 * 60)
     minutes, seconds = divmod(remainder, 60)
     return (
-        f"{hours:02d}:{minutes:02d}:{seconds:02d}" if hours > 0 else f"{minutes:02d}:{seconds:02d}"
+        f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        if hours > 0
+        else f"{minutes:02d}:{seconds:02d}"
     )
 
 
@@ -161,7 +163,9 @@ def is_time_format(
         Test result
 
     """
-    if time_format in ["short", "any"] and re.match(r"([01]\d|2[0-3]):([0-5]\d)$", test_string):
+    if time_format in ["short", "any"] and re.match(
+        r"([01]\d|2[0-3]):([0-5]\d)$", test_string
+    ):
         return True
     if time_format in ["full", "any"] and re.match(
         r"([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$", test_string
@@ -241,3 +245,23 @@ def is_today(test_date: str) -> bool:
 
     """
     return get_current_date() == test_date
+
+
+def is_before_end_of_tomorrow(df: datetime) -> bool:
+    """Check whether a datetime is before the end of tomorrow.
+
+    Parameters
+    ----------
+    df : datetime
+        Datetime to test
+
+    Returns
+    -------
+    bool
+        True or False
+
+    """
+    end_of_tomorrow = (datetime.now() + timedelta(days=2)).replace(
+        hour=0, minute=0, second=0, microsecond=0
+    )
+    return df < end_of_tomorrow
