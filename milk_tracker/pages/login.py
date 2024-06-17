@@ -19,7 +19,9 @@ def page(mt: AppController) -> Union[None, RedirectResponse]:
 
     """
 
-    def try_login() -> None:  # local function to avoid passing username and password as arguments
+    def try_login() -> (
+        None
+    ):  # local function to avoid passing username and password as arguments
         if not mt.env["PASSWORD"]:
             ui.notify("Access deactivated", color="warning")
         else:
@@ -34,7 +36,10 @@ def page(mt: AppController) -> Union[None, RedirectResponse]:
                 app.storage.user.update(
                     {"failed_attempts": app.storage.user.get("failed_attempts", 0) + 1}
                 )
-                if app.storage.user.get("failed_attempts", 0) >= mt.config.MAX_PASSWORD_ATTEMPTS:
+                if (
+                    app.storage.user.get("failed_attempts", 0)
+                    >= mt.config.MAX_PASSWORD_ATTEMPTS
+                ):
                     login_form.clear()
                     with login_form:
                         access_denied_label()
@@ -44,7 +49,9 @@ def page(mt: AppController) -> Union[None, RedirectResponse]:
                 )
 
     def access_denied_label() -> ui.label:
-        return ui.label("Too many failed login attempts. Access denied.").classes("text-red-600")
+        return ui.label("Too many failed login attempts. Access denied.").classes(
+            "text-red-600"
+        )
 
     if app.storage.user.get("authenticated", False):
         return RedirectResponse("/")

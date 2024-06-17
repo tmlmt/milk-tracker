@@ -1,5 +1,5 @@
 # Allow lines to be as long as 100.
-line-length = 100
+line-length = 90
 
 # milk_tracker is intended as a package
 namespace-packages = ["milk_tracker"]

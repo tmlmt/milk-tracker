@@ -39,7 +39,11 @@ def test_ongoing_meal_storage_data() -> None:
         "start_time": "16:30:00",
         "end_time": "",
         "rounds": [
-            {"start_time": "2024-06-05T16:30:42.322176", "end_time": None, "is_active": True}
+            {
+                "start_time": "2024-06-05T16:30:42.322176",
+                "end_time": None,
+                "is_active": True,
+            }
         ],
     }
     meal = OngoingMeal(**storage_data)
@@ -118,7 +122,9 @@ def test_pause_start_meal_round() -> None:
         m = OngoingMeal()
 
         # Pause after a while
-        traveller.move_to(datetime(2024, 6, 10, 21, 10, 7, tzinfo=ZoneInfo("Europe/Copenhagen")))
+        traveller.move_to(
+            datetime(2024, 6, 10, 21, 10, 7, tzinfo=ZoneInfo("Europe/Copenhagen"))
+        )
         m.pause()
         assert m.rounds[0].model_dump() == {
             "start_datetime": datetime(2024, 6, 10, 20, 50),
@@ -127,7 +133,9 @@ def test_pause_start_meal_round() -> None:
         }
 
         # Start a new round
-        traveller.move_to(datetime(2024, 6, 10, 21, 20, 10, tzinfo=ZoneInfo("Europe/Copenhagen")))
+        traveller.move_to(
+            datetime(2024, 6, 10, 21, 20, 10, tzinfo=ZoneInfo("Europe/Copenhagen"))
+        )
         m.start_new_round()
         assert len(m.rounds) == 2  # noqa: PLR2004
         assert m.rounds[1].model_dump() == {

@@ -5,7 +5,12 @@ from controllers.app import AppController
 from nicegui import ui
 from nicegui.events import ValueChangeEventArguments
 from pydantic import ValidationError
-from utils.time_utils import get_current_date, get_current_time, time_between, timedelta_to_hrmin
+from utils.time_utils import (
+    get_current_date,
+    get_current_time,
+    time_between,
+    timedelta_to_hrmin,
+)
 
 
 def page(mt: AppController) -> None:
@@ -133,7 +138,9 @@ def page(mt: AppController) -> None:
         with ui.card():
             ui.markdown("##### Vitamin 👶")
             ui.separator()
-            with ui.card_section().classes("h-full w-full flex justify-center content-center"):
+            with ui.card_section().classes(
+                "h-full w-full flex justify-center content-center"
+            ):
                 checkmark_vitamins_baby = ui.button(
                     icon="done", on_click=confirm_vitamins_baby
                 ).props(
@@ -142,7 +149,9 @@ def page(mt: AppController) -> None:
         with ui.card():
             ui.markdown("##### Vitamins 👩‍🍼")
             ui.separator()
-            with ui.card_section().classes("h-full w-full flex justify-center content-center"):
+            with ui.card_section().classes(
+                "h-full w-full flex justify-center content-center"
+            ):
                 checkmark_vitamins_mother = ui.button(
                     icon="done", on_click=confirm_vitamins_mother
                 ).props(
@@ -179,14 +188,18 @@ def page(mt: AppController) -> None:
             with ui.row().classes("items-stretch"):
                 ui.button(
                     "Now",
-                    on_click=lambda: new_start_time.set_value(get_current_time(include_sec=False)),
+                    on_click=lambda: new_start_time.set_value(
+                        get_current_time(include_sec=False)
+                    ),
                 ).bind_enabled_from(
                     mt.computed, "is_ongoing_meal", backward=lambda x: not x
                 ).classes("h-full")
                 with ui.input(
                     value=mt.get_input_default_value_newmeal_start_time(),
                     on_change=switch_focus_to_end_time,
-                ).bind_enabled_from(mt.computed, "is_ongoing_meal", backward=lambda x: not x).props(
+                ).bind_enabled_from(
+                    mt.computed, "is_ongoing_meal", backward=lambda x: not x
+                ).props(
                     "mask='time' :rules='[ (val, rules) => rules.time(val) || \"Invalid time\"]' "
                     "lazy-rules"
                 ).classes("w-24") as new_start_time:
@@ -195,15 +208,17 @@ def page(mt: AppController) -> None:
                             with ui.row().classes("justify-end"):
                                 ui.button("Close", on_click=menu_new_start_time.close)
                     with new_start_time.add_slot("append"):
-                        ui.icon("access_time").on("click", menu_new_start_time.open).classes(
-                            "cursor-pointer"
-                        )
+                        ui.icon("access_time").on(
+                            "click", menu_new_start_time.open
+                        ).classes("cursor-pointer")
         with ui.column():
             ui.markdown("##### End time")
             with ui.row().classes("items-stretch"):
                 ui.button(
                     "Now",
-                    on_click=lambda: new_end_time.set_value(get_current_time(include_sec=False)),
+                    on_click=lambda: new_end_time.set_value(
+                        get_current_time(include_sec=False)
+                    ),
                 ).classes("h-full")
                 with ui.input(on_change=switch_focus_to_start_time).props(
                     "mask='time' "
@@ -215,9 +230,9 @@ def page(mt: AppController) -> None:
                             with ui.row().classes("justify-end"):
                                 ui.button("Close", on_click=menu_new_end_time.close)
                     with new_end_time.add_slot("append"):
-                        ui.icon("access_time").on("click", menu_new_end_time.open).classes(
-                            "cursor-pointer"
-                        )
+                        ui.icon("access_time").on(
+                            "click", menu_new_end_time.open
+                        ).classes("cursor-pointer")
         with ui.column().classes("justify-end"):
             ui.button(
                 "Add",
@@ -264,7 +279,9 @@ def page(mt: AppController) -> None:
                         ui.item_label(f"Round {round_number+1}")
                     with ui.item_section().classes("w-28"):
                         if round_details.is_active:
-                            ui.item_label().bind_text_from(mt.computed, "timer_meal_round")
+                            ui.item_label().bind_text_from(
+                                mt.computed, "timer_meal_round"
+                            )
                         else:
                             text = time_between(
                                 round_details.end_datetime, round_details.start_datetime
@@ -453,7 +470,9 @@ def page(mt: AppController) -> None:
         ]
 
         if field == "meals":
-            graph_data[0].update({"y": mt.meals.df_summary_raw["number_of_rows"].array.tolist()})
+            graph_data[0].update(
+                {"y": mt.meals.df_summary_raw["number_of_rows"].array.tolist()}
+            )
         else:
             graph_data[0].update(
                 {
@@ -507,6 +526,8 @@ def page(mt: AppController) -> None:
         with ui.tab_panel("previous_end"):
             figure_summary_previous_end = ui.plotly(
                 generate_summary_graph(
-                    "previous_end", "Time since previous end of meal", "Time interval (hrs)"
+                    "previous_end",
+                    "Time since previous end of meal",
+                    "Time interval (hrs)",
                 )
             ).classes("w-screen-and-padding")
