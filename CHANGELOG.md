@@ -1,6 +1,23 @@
 # Changelog
 
 ---
+## [2.2.0](https://github.com/tmlmt/milk-tracker/compare/v2.1.0..v2.2.0) - 2024-07-08
+
+### 🚀 Enhancements
+
+- add favicon - ([0ec48fa](https://github.com/tmlmt/milk-tracker/commit/0ec48fa73f09c3546d27fbb62a58c281698036dc)) - Thomas Lamant
+
+### 🩹 Fixes
+
+- first round not showing when starting meal recording - ([bcb8b49](https://github.com/tmlmt/milk-tracker/commit/bcb8b49909e5ad4174a814780b54a2dea02449a8)) - Thomas Lamant
+
+### 🏡 Chore
+
+- **(deps)** update all deps - ([cb85d0f](https://github.com/tmlmt/milk-tracker/commit/cb85d0f4f83730f219e69c3925c514ce7f6d0a38), [1d49ffb](https://github.com/tmlmt/milk-tracker/commit/1d49ffb8c0796ce03cb619c3aca09e430b7c9566)) - Thomas Lamant
+- **(format)** reduce line-length to 90 - ([9baa5fd](https://github.com/tmlmt/milk-tracker/commit/9baa5fd6ca3df31977b9b3fdc7105e85a03f77e2)) - Thomas Lamant
+- **(time_utils)** pre-add a is_before_end_of_tomorrow function - ([17e7019](https://github.com/tmlmt/milk-tracker/commit/17e7019023303b19d741d271f93ee7d331e8f8a7)) - Thomas Lamant
+
+---
 ## [2.1.0](https://github.com/tmlmt/milk-tracker/compare/v2.0.1..v2.1.0) - 2024-06-13
 
 ### 🚀 Enhancements
