@@ -27,4 +27,5 @@ ui.run(
     show=False,
     title=mt.config.TITLE,
     storage_secret=mt.env["STORAGE_SECRET"],
+    favicon=Path("assets") / "favicon.svg",
 )
