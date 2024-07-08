@@ -3,7 +3,7 @@ from pathlib import Path
 from controllers.app import AppController
 from middleware.auth import AuthMiddleware
 from nicegui import app, ui
-from pages import login, root
+from pages import login, memories, root
 
 # Milk Tracker overall controller
 mt = AppController(config_file=Path("config.yaml"))
@@ -20,6 +20,11 @@ def login_page() -> None:  # noqa: D103
 @ui.page("/")
 def main_page() -> None:  # noqa: D103
     root.page(mt)
+
+
+@ui.page("/memories")
+def memories_page() -> None:  # noqa: D103
+    memories.page(mt)
 
 
 ui.run(
