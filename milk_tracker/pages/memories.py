@@ -1,6 +1,8 @@
 from controllers.app import AppController
 from nicegui import events, ui
 from pages.header import display_header
+from pydantic import ValidationError
+from schemas.memory import Memory
 from utils.time_utils import get_current_date
 
 
@@ -18,12 +20,20 @@ def page(mt: AppController) -> None:
     ui.markdown("## Memories")
     mt.load_memories()
 
-    table = ui.table.from_pandas(mt.memories.df).classes("w-[30rem]")
+    table = ui.table.from_pandas(mt.memories.df).classes("w-full")
+    for column in table.columns:
+        column.update({"align": "left", "sortable": True})
+        if column["field"] == "date":
+            column.update({"classes": "w-24"})
+
     table.add_slot(
         "header",
         r"""
         <q-tr :props="props">
-            <q-th v-for="col in props.cols" :key="col.name" :props="props">
+            <q-th
+            v-for="col in props.cols.filter(c => ['date', 'description'].includes(c.name))"
+            :key="col.name"
+            :props="props">
                 {{ col.label }}
             </q-th>
             <q-th auto-width />
@@ -56,7 +66,7 @@ def page(mt: AppController) -> None:
                     />
                 </q-popup-edit>
             </q-td>
-            <q-td auto-width >
+            <q-td auto-width>
                 <q-btn size="sm" color="warning" round dense icon="delete"
                     @click="() => $parent.$emit('delete', props.row)"
                 />
@@ -65,28 +75,73 @@ def page(mt: AppController) -> None:
     """,
     )
 
+    # Reusable Dialog Element
+    with ui.dialog() as dialog, ui.card():
+        ui.label("Are you sure?")
+        with ui.row():
+            ui.button("Yes", on_click=lambda: dialog.submit("Yes"))
+            ui.button("No", on_click=lambda: dialog.submit("No"))
+
     def add_row() -> None:
-        table.rows.append({"date": get_current_date(), "description": "New guy"})
-        ui.notify("Added new row")
+        try:
+            new_entry = Memory(
+                date=new_memory_date.value, description=new_memory_description.value
+            )
+        except ValidationError:
+            ui.notify("Check that your input is correct", type="negative")
+            return
+        mt.memories.add(new_entry)
+        table.rows[:] = mt.memories.table_rows
         table.update()
+        new_memory_date.value = ""
+        new_memory_description.value = ""
+        ui.notify("Memory added", type="positive")
 
     def edit_entry(e: events.GenericEventArguments) -> None:
-        for row in table.rows:
-            if row["date"] == e.args["date"]:
-                row.update(e.args)
-        ui.notify(f"Updated rows to: {table.rows}")
+        try:
+            edited_memory = Memory(date=e.args["date"], description=e.args["description"])
+        except ValidationError:
+            ui.notify("Check that your input is correct", type="negative")
+            return
+        mt.memories.edit(e.args["index"], edited_memory)
+        table.rows[:] = mt.memories.table_rows
         table.update()
+        ui.notify("Memory edited", type="positive")
 
-    def delete(e: events.GenericEventArguments) -> None:
-        table.rows[:] = [row for row in table.rows if row["id"] != e.args["id"]]
-        ui.notify(f'Deleted row with ID {e.args["id"]}')
-        table.update()
-
-    with table.add_slot("bottom-row"):
-        with table.cell().props("colspan=3"):
-            ui.button("Add row", icon="add", color="accent", on_click=add_row).classes(
-                "w-full"
+    async def delete(e: events.GenericEventArguments) -> None:
+        result = await dialog
+        if result == "Yes":
+            mt.memories.remove(e.args["index"])
+            table.rows[:] = mt.memories.table_rows
+            ui.notify(
+                f'Deleted Memory with DATE {e.args["date"]} and INDEX {e.args["index"]}',
+                type="positive",
             )
+            table.update()
+
+    with table.add_slot("top-row"):
+        with table.row():
+            with table.cell():
+                with ui.input(value=get_current_date()).props(
+                    "mask='####-##-##' "
+                    ":rules='[v => /^[0-9]+-[0-1][0-9]-[0-3][0-9]$/.test(v) || \"Invalid date\"]' "
+                    "lazy-rules"
+                ).classes("w-36") as new_memory_date:
+                    with ui.menu().props("auto-close no-parent-event") as menu_new_date:
+                        ui.date().bind_value(new_memory_date)
+                    with new_memory_date.add_slot("append"):
+                        ui.icon("edit_calendar").on("click", menu_new_date.open).classes(
+                            "cursor-pointer"
+                        )
+            with table.cell():
+                new_memory_description = ui.input().props(
+                    ":rules='[v => v.length > 0 || \"Empty description\"]' "
+                )
+            with table.cell():
+                pass
+        with table.row():
+            with table.cell().props("colspan=3"):
+                ui.button("Add row", icon="add", on_click=add_row).classes("w-full")
 
     table.on("edit_entry", edit_entry)
     table.on("delete", delete)

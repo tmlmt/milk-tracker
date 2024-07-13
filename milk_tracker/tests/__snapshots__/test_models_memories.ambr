@@ -2,26 +2,35 @@
 # name: test_add_row
   dict({
     'date': dict({
-      0: datetime.date(2024, 2, 1),
+      0: datetime.date(2024, 3, 1),
       1: datetime.date(2024, 2, 15),
-      2: datetime.date(2024, 3, 1),
+      2: datetime.date(2024, 2, 1),
     }),
     'description': dict({
-      0: "I can't believe it happened!",
+      0: 'Yes, it did',
       1: 'A new memory',
-      2: 'Yes, it did',
+      2: "I can't believe it happened!",
+    }),
+    'index': dict({
+      0: 0,
+      1: 1,
+      2: 2,
     }),
   })
 # ---
 # name: test_init_memories
   dict({
     'date': dict({
-      0: datetime.date(2024, 2, 1),
-      1: datetime.date(2024, 3, 1),
+      0: datetime.date(2024, 3, 1),
+      1: datetime.date(2024, 2, 1),
     }),
     'description': dict({
-      0: "I can't believe it happened!",
-      1: 'Yes, it did',
+      0: 'Yes, it did',
+      1: "I can't believe it happened!",
+    }),
+    'index': dict({
+      0: 0,
+      1: 1,
     }),
   })
 # ---
