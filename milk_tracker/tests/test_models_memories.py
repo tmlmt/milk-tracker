@@ -56,3 +56,37 @@ def test_add_row(m: MemoriesDataModel) -> None:
             },
         ]
     )
+
+
+def test_remove_row(m: MemoriesDataModel) -> None:
+    """Test remove_row()."""
+    m.remove(0)
+    assert m.df.to_dict("records") == snapshot(
+        [
+            {
+                "date": datetime.date(2024, 2, 1),
+                "description": "I can't believe it happened!",
+                "index": 0,
+            }
+        ]
+    )
+
+
+def test_edit_row(m: MemoriesDataModel) -> None:
+    """Test edit_row()."""
+    edited_m = Memory(date="2024-02-15", description="Edited memory")
+    m.edit(0, edited_m)
+    assert m.df.to_dict("records") == snapshot(
+        [
+            {
+                "date": datetime.date(2024, 2, 15),
+                "description": "Edited memory",
+                "index": 0,
+            },
+            {
+                "date": datetime.date(2024, 2, 1),
+                "description": "I can't believe it happened!",
+                "index": 1,
+            },
+        ]
+    )
