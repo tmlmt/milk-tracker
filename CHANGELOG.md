@@ -1,6 +1,17 @@
 # Changelog
 
 ---
+## [2.3.3](https://github.com/tmlmt/milk-tracker/compare/v2.3.2..v2.3.3) - 2024-07-14
+
+### 🩹 Fixes
+
+- don't overwrite memories asset file when upgrading - ([40c48d5](https://github.com/tmlmt/milk-tracker/commit/40c48d5afd36b7b16ef8d078c6f53b4643311107)) - Thomas Lamant
+
+### 🏡 Chore
+
+- update README - ([12df800](https://github.com/tmlmt/milk-tracker/commit/12df800d4b10efac7ca2070be6c50c957b0c4ea4)) - Thomas Lamant
+
+---
 ## [2.3.2](https://github.com/tmlmt/milk-tracker/compare/v2.3.1..v2.3.2) - 2024-07-14
 
 ### 🎨 Style
