@@ -147,7 +147,7 @@ def page(mt: AppController) -> None:
                 checkmark_vitamins_baby = ui.button(
                     icon="done", on_click=confirm_vitamins_baby
                 ).props(
-                    f"round color='{"secondary" if mt.computed.has_baby_taken_vitamins_today else "grey"}'"  # noqa: E501
+                    f"round color='{'secondary' if mt.computed.has_baby_taken_vitamins_today else 'grey'}'"  # noqa: E501
                 )
         with ui.card():
             ui.markdown("##### Vitamins 👩‍🍼")
@@ -158,7 +158,7 @@ def page(mt: AppController) -> None:
                 checkmark_vitamins_mother = ui.button(
                     icon="done", on_click=confirm_vitamins_mother
                 ).props(
-                    f"round color='{"secondary" if mt.computed.has_mother_taken_vitamins_today else "grey"}'"  # noqa: E501
+                    f"round color='{'secondary' if mt.computed.has_mother_taken_vitamins_today else 'grey'}'"  # noqa: E501
                 )
 
     ui.markdown("## New meal")
@@ -225,7 +225,7 @@ def page(mt: AppController) -> None:
                 ).classes("h-full")
                 with ui.input(on_change=switch_focus_to_start_time).props(
                     "mask='time' "
-                    ':rules=\'[ (val, rules) => val == "" | rules.time(val) || "Invalid time"]\' '
+                    ':rules=\'[ (v, rules) => v == "" | rules.time(v) || "Invalid time"]\' '
                     "lazy-rules"
                 ).classes("w-24") as new_end_time:
                     with ui.menu().props("no-parent-event") as menu_new_end_time:
