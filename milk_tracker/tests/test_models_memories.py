@@ -1,4 +1,5 @@
 import datetime
+from datetime import date
 from pathlib import Path
 
 import pytest
@@ -7,12 +8,13 @@ from models.memories import MemoriesDataModel
 from schemas.memory import Memory
 
 fixture_file_path = Path(__file__).parent.resolve() / "fixtures" / "memory_sample.csv"
+fixture_birthday = date(2024, 1, 1)
 
 
 @pytest.fixture()
 def m() -> MemoriesDataModel:
     """Return initial model to be used for testing."""
-    return MemoriesDataModel(fixture_file_path)
+    return MemoriesDataModel(file_path=fixture_file_path, birthday=fixture_birthday)
 
 
 def test_init_memories(m: MemoriesDataModel) -> None:
@@ -23,11 +25,13 @@ def test_init_memories(m: MemoriesDataModel) -> None:
                 "date": datetime.date(2024, 3, 1),
                 "description": "Yes, it did",
                 "index": 0,
+                "age": "2 months",
             },
             {
                 "date": datetime.date(2024, 2, 1),
                 "description": "I can't believe it happened!",
                 "index": 1,
+                "age": "1 month",
             },
         ]
     )
@@ -43,16 +47,19 @@ def test_add_row(m: MemoriesDataModel) -> None:
                 "date": datetime.date(2024, 3, 1),
                 "description": "Yes, it did",
                 "index": 0,
+                "age": "2 months",
             },
             {
                 "date": datetime.date(2024, 2, 15),
                 "description": "A new memory",
                 "index": 1,
+                "age": "6 weeks 3 days",
             },
             {
                 "date": datetime.date(2024, 2, 1),
                 "description": "I can't believe it happened!",
                 "index": 2,
+                "age": "1 month",
             },
         ]
     )
@@ -67,6 +74,7 @@ def test_remove_row(m: MemoriesDataModel) -> None:
                 "date": datetime.date(2024, 2, 1),
                 "description": "I can't believe it happened!",
                 "index": 0,
+                "age": "1 month",
             }
         ]
     )
@@ -82,11 +90,13 @@ def test_edit_row(m: MemoriesDataModel) -> None:
                 "date": datetime.date(2024, 2, 15),
                 "description": "Edited memory",
                 "index": 0,
+                "age": "6 weeks 3 days",
             },
             {
                 "date": datetime.date(2024, 2, 1),
                 "description": "I can't believe it happened!",
                 "index": 1,
+                "age": "1 month",
             },
         ]
     )

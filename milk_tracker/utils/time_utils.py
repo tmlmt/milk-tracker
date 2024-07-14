@@ -1,5 +1,5 @@
 import re
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from typing import Literal, Optional
 
 import numpy as np
@@ -265,3 +265,84 @@ def is_before_end_of_tomorrow(df: datetime) -> bool:
         hour=0, minute=0, second=0, microsecond=0
     )
     return df < end_of_tomorrow
+
+
+def days_between_int(date1: date, date2: date) -> int:
+    """Calculate the number of days between two dates.
+
+    Parameters
+    ----------
+    date1 : date
+        first date
+    date2 : date
+        second date
+
+    Returns
+    -------
+    int
+        number of days (starts at 1)
+
+    """
+    # Ensure date1 is earlier than date2
+    if date1 > date2:
+        date1, date2 = date2, date1
+    return int(np.floor((date2 - date1).total_seconds() / (24 * 60 * 60)))
+
+
+def days_between_txt(date1: date, date2: date) -> str:
+    """Return the time period between two dates.
+
+    Parameters
+    ----------
+    date1 : date
+        first date
+    date2 : date
+        second date
+
+    Returns
+    -------
+    str
+        Time period in format [y year(s) ][m month(s) ]d day(s)
+
+    """
+    # Ensure date1 is earlier than date2
+    if date1 > date2:
+        date1, date2 = date2, date1
+
+    # Calculate the difference in years, months, and days
+    years = date2.year - date1.year
+    months = date2.month - date1.month
+    days = date2.day - date1.day
+    weeks = 0
+
+    # Adjust for negative months and days
+    if days < 0:
+        months -= 1
+        days += (date2.replace(day=1) - date2.replace(month=date2.month - 1, day=1)).days
+
+    if months < 0:
+        years -= 1
+        months += 12
+
+    # Construct the output string
+    result = []
+    if years:
+        result.append(f"{years} year{'s' if years > 1 else ''}")
+    if months and (months >= 2 or days < 7):  # noqa: PLR2004
+        result.append(f"{months} month{'s' if months > 1 else ''}")
+    elif (not months and days > 0) or (months and months) == 1:
+        weeks = (
+            days_between_int(
+                date(2024, date1.month, date1.day), date(2024, date2.month, date2.day)
+            )
+            // 7
+        )
+        days = days_between_int(
+            date(2024, date1.month, date1.day) + timedelta(weeks=weeks),
+            date(2024, date2.month, date2.day),
+        )
+        result.append(f"{weeks} week{'s' if weeks > 1 else ''}")
+    if days or not (years or months or weeks or days):
+        result.append(f"{days} day{'s' if days > 1 else ''}")
+
+    return " ".join(result)

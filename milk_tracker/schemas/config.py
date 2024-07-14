@@ -1,3 +1,4 @@
+from datetime import date
 from pathlib import Path
 from typing import Any, Dict
 
@@ -25,6 +26,7 @@ class Config(BaseModel):
         ..., description="Title of the app as it appears in the browser tab"
     )
     MAX_PASSWORD_ATTEMPTS: PositiveInt
+    BIRTHDAY: date = Field(..., description="Birthday date")
 
     @field_validator("MEALS_FILE_NAME")
     @classmethod

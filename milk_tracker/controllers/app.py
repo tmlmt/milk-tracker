@@ -100,7 +100,8 @@ class AppController:
     def load_memories(self) -> None:
         """Load memories and handler."""
         self.memories = MemoriesDataModel(
-            Path(self.config.ASSETS_DIR) / self.config.MEMORIES_FILE_NAME
+            file_path=Path(self.config.ASSETS_DIR) / self.config.MEMORIES_FILE_NAME,
+            birthday=self.config.BIRTHDAY,
         )
 
     # Computes

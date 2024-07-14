@@ -23,18 +23,21 @@ def page(mt: AppController) -> None:
     table = ui.table.from_pandas(mt.memories.df).classes("w-full")
     for column in table.columns:
         column.update({"align": "left", "sortable": True})
-        if column["field"] == "date":
-            column.update({"classes": "w-24"})
+        if column["field"] in ["date", "age"]:
+            column.update({"headerClasses": "w-36"})
 
     table.add_slot(
         "header",
         r"""
         <q-tr :props="props">
-            <q-th
-            v-for="col in props.cols.filter(c => ['date', 'description'].includes(c.name))"
-            :key="col.name"
-            :props="props">
-                {{ col.label }}
+            <q-th key="date" :props="props">
+                Date
+            </q-th>
+            <q-th key="age" :props="props">
+                Age
+            </q-th>
+            <q-th key="description" :props="props">
+                Description
             </q-th>
             <q-th auto-width />
         </q-tr>
@@ -54,6 +57,9 @@ def page(mt: AppController) -> None:
                         @keyup.enter="scope.set"
                     />
                 </q-popup-edit>
+            </q-td>
+            <q-td key="age" :props="props">
+                {{ props.row.age }}
             </q-td>
             <q-td key="description" :props="props">
                 {{ props.row.description }}
@@ -91,10 +97,11 @@ def page(mt: AppController) -> None:
             ui.notify("Check that your input is correct", type="negative")
             return
         mt.memories.add(new_entry)
+        mt.memories.save_to_file()
         table.rows[:] = mt.memories.table_rows
         table.update()
-        new_memory_date.value = ""
-        new_memory_description.value = ""
+        new_memory_date.value = get_current_date()
+        new_memory_description.value = "-"
         ui.notify("Memory added", type="positive")
 
     def edit_entry(e: events.GenericEventArguments) -> None:
@@ -104,6 +111,7 @@ def page(mt: AppController) -> None:
             ui.notify("Check that your input is correct", type="negative")
             return
         mt.memories.edit(e.args["index"], edited_memory)
+        mt.memories.save_to_file()
         table.rows[:] = mt.memories.table_rows
         table.update()
         ui.notify("Memory edited", type="positive")
@@ -112,6 +120,7 @@ def page(mt: AppController) -> None:
         result = await dialog
         if result == "Yes":
             mt.memories.remove(e.args["index"])
+            mt.memories.save_to_file()
             table.rows[:] = mt.memories.table_rows
             ui.notify(
                 f'Deleted Memory with DATE {e.args["date"]} and INDEX {e.args["index"]}',
@@ -133,14 +142,16 @@ def page(mt: AppController) -> None:
                         ui.icon("edit_calendar").on("click", menu_new_date.open).classes(
                             "cursor-pointer"
                         )
+            with table.cell().classes("!bg-gray-100"):
+                ui.label("-")
             with table.cell():
                 new_memory_description = ui.input().props(
-                    ":rules='[v => v.length > 0 || \"Empty description\"]' "
+                    ":rules='[v => v.length > 0 || \"Empty description\"]'"
                 )
             with table.cell():
                 pass
         with table.row():
-            with table.cell().props("colspan=3"):
+            with table.cell().props("colspan=4"):
                 ui.button("Add row", icon="add", on_click=add_row).classes("w-full")
 
     table.on("edit_entry", edit_entry)
