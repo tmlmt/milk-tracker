@@ -34,12 +34,15 @@ Huge thanks to the Open Source community for providing such great tools to the w
 - Reminders for daily intake of vitamins
 - See latest three days trends in graphs
 - See daily stats in a table
+- Keep a log of daily memories
 
 ## Backlog
 
-- Keep a log of daily observations
 - Edit and delete any meal
-- Prediction of next meal's time and duration
+
+## Tried without satisfactory result
+
+- Prediction of next meal's time and duration (Facebook Prophet couldn't really predict accurately -- see https://github.com/tmlmt/milk-tracker/issues/15. Perhaps additional metadata would help, or another algorithm may be more addapted)
 
 ## Self-hosting
 
@@ -56,11 +59,12 @@ STORAGE_SECRET=<passphrase to protect your storage area>
 ```
 
 4. Customize the `milk_tracker/config.yaml` file
-5. Use `scripts/milk-tracker.conf` as example to configure the redirection of http requests to your app using nginx and your own domain
-6. Use `scripts/milk-tracker.service` as example to configure a systemd unit to manage the start/stop of the app
-7. Enable the unit, e.g. `systemctl --user enable milk-tracker.service` if you're running the app using a specific user and choose to run user units
-8. Start the app, e.g. `systemctl --user start milk-tracker.service` 
-9. Go to [https://<your_domain>:<port_number>](https://<your_domain>:<port_number>) and start tracking :-)
+5. Initialize the meal journal and memories log by renaming `assets/journal.template.xlsx` and resp. `assets/memories.template.csv` into `assets/journal.xlsx` and resp. `assets/memories.csv`
+6. Use `scripts/milk-tracker.conf` as example to configure the redirection of http requests to your app using nginx and your own domain
+7. Use `scripts/milk-tracker.service` as example to configure a systemd unit to manage the start/stop of the app
+8. Enable the unit, e.g. `systemctl --user enable milk-tracker.service` if you're running the app using a specific user and choose to run user units
+9. Start the app, e.g. `systemctl --user start milk-tracker.service` 
+10. Go to [https://<your_domain>:<port_number>](https://<your_domain>:<port_number>) and start tracking :-)
 
 ## License
 
