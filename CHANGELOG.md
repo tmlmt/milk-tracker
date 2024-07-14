@@ -1,6 +1,18 @@
 # Changelog
 
 ---
+## [2.3.4](https://github.com/tmlmt/milk-tracker/compare/v2.3.3..v2.3.4) - 2024-07-14
+
+### 🩹 Fixes
+
+- **(days_between_txt)** wrong calculations when the later date is in January - ([a7182bf](https://github.com/tmlmt/milk-tracker/commit/a7182bf907e517b7a328b44f578ac03a3158784f)) - Thomas Lamant
+
+### 🏡 Chore
+
+- **(README)** update screenshots - ([d579a7b](https://github.com/tmlmt/milk-tracker/commit/d579a7b0c9f261ec559acfca25488cd4904b9652)) - Thomas Lamant
+- pre-add Memories screenshot - ([cee2437](https://github.com/tmlmt/milk-tracker/commit/cee2437249b0b8f04d455693c1ab98e99a169b5f)) - Thomas Lamant
+
+---
 ## [2.3.3](https://github.com/tmlmt/milk-tracker/compare/v2.3.2..v2.3.3) - 2024-07-14
 
 ### 🩹 Fixes
