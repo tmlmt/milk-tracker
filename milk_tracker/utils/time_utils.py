@@ -96,7 +96,8 @@ def time_between(after_datetime: datetime, before_datetime: datetime) -> str:
 
     """
     if after_datetime < before_datetime:
-        msg = "Check order in which you input the dates when using the time_between() function"
+        msg = """Check order in which you input the dates when using
+        the time_between() function"""
         raise ValueError(msg)
     return timedelta_to_timer(after_datetime - before_datetime)
 

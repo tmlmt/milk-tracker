@@ -164,7 +164,7 @@ def page(mt: AppController) -> None:
     ui.markdown("## New meal")
 
     def switch_focus_to_end_time() -> None:
-        if len(new_start_time.value) == 5:
+        if len(new_start_time.value) == 5:  # noqa: PLR2004
             # Ref: https://github.com/zauberzeug/nicegui/discussions/2574
             ui.run_javascript(f"getElement({new_end_time.id}).$refs.qRef.focus()")
 
@@ -177,7 +177,7 @@ def page(mt: AppController) -> None:
             ui.markdown("##### Date")
             with ui.input(value=get_current_date()).props(
                 "mask='####-##-##' "
-                ":rules='[v => /^[0-9]+-[0-1][0-9]-[0-3][0-9]$/.test(v) || \"Invalid date\"]' "
+                ":rules='[v => /^[0-9]+-[0-1][0-9]-[0-3][0-9]$/.test(v) || \"Invalid date\"]' "  # noqa: E501
                 "lazy-rules"
             ).classes("w-36") as new_date:
                 with ui.menu().props("auto-close no-parent-event") as menu_new_date:
@@ -203,7 +203,8 @@ def page(mt: AppController) -> None:
                 ).bind_enabled_from(
                     mt.computed, "is_ongoing_meal", backward=lambda x: not x
                 ).props(
-                    "mask='time' :rules='[ (val, rules) => rules.time(val) || \"Invalid time\"]' "
+                    "mask='time' "
+                    ":rules='[ (v, rules) => rules.time(v) || \"Invalid time\"]' "
                     "lazy-rules"
                 ).classes("w-24") as new_start_time:
                     with ui.menu().props("no-parent-event") as menu_new_start_time:
@@ -225,7 +226,7 @@ def page(mt: AppController) -> None:
                 ).classes("h-full")
                 with ui.input(on_change=switch_focus_to_start_time).props(
                     "mask='time' "
-                    ':rules=\'[ (v, rules) => v == "" | rules.time(v) || "Invalid time"]\' '
+                    ':rules=\'[ (v, rules) => v == "" | rules.time(v) || "Invalid time"]\' '  # noqa: E501
                     "lazy-rules"
                 ).classes("w-24") as new_end_time:
                     with ui.menu().props("no-parent-event") as menu_new_end_time:
@@ -276,7 +277,7 @@ def page(mt: AppController) -> None:
         with ui.list().props("bordered dense") as meal_round_list:
             for round_number, round_details in enumerate(mt.ongoing_meal.rounds):  # type: ignore[union-attr]
                 with ui.item().props(
-                    f":active='{round_details.is_active}' active-class='bg-primary text-white'"
+                    f":active='{round_details.is_active}' active-class='bg-primary text-white'"  # noqa: E501
                 ):
                     with ui.item_section().classes("w-24"):
                         ui.item_label(f"Round {round_number+1}")
@@ -288,7 +289,8 @@ def page(mt: AppController) -> None:
                         else:
                             text = time_between(
                                 round_details.end_datetime, round_details.start_datetime
-                            )  # mypy[arg-type]: end_datetime is not none as the round is not active
+                            )  # mypy[arg-type]: end_datetime is not none as the round is
+                            #                    not active
                             if (
                                 mt.computed.is_ongoing_meal_paused
                                 and mt.ongoing_meal

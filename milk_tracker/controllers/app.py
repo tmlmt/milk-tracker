@@ -86,6 +86,8 @@ class AppController:
                 config_dict = yaml.safe_load(file)
             config = Config(**config_dict)
         except FileNotFoundError:
+            # TODO(tmlmt): Introduce logger
+            # https://github.com/tmlmt/milk-tracker/issues/23
             print(f"Error: The file {file_path} does not exist.")
             raise
         except yaml.YAMLError:

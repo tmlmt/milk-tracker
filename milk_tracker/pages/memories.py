@@ -133,7 +133,7 @@ def page(mt: AppController) -> None:
             with table.cell():
                 with ui.input(value=get_current_date()).props(
                     "mask='####-##-##' "
-                    ":rules='[v => /^[0-9]+-[0-1][0-9]-[0-3][0-9]$/.test(v) || \"Invalid date\"]' "
+                    ":rules='[v => /^[0-9]+-[0-1][0-9]-[0-3][0-9]$/.test(v) || \"Invalid date\"]' "  # noqa: E501
                     "lazy-rules"
                 ).classes("w-36") as new_memory_date:
                     with ui.menu().props("auto-close no-parent-event") as menu_new_date:
