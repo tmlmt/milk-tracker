@@ -1,6 +1,17 @@
 # Changelog
 
 ---
+## [2.3.0](https://github.com/tmlmt/milk-tracker/compare/v2.2.0..v2.3.0) - 2024-07-14
+
+### 🚀 Enhancements
+
+- keep log of daily memories (#22) - ([b0f9afa](https://github.com/tmlmt/milk-tracker/commit/b0f9afa2cc3aa7baef046e88076b3bf17501943d)) - Thomas Lamant
+
+### 🏡 Chore
+
+- **(deps)** remove unused prophets and update all other deps - ([646f4c3](https://github.com/tmlmt/milk-tracker/commit/646f4c37f45e61730ee88477a2baf83bc1a68e8b)) - Thomas Lamant
+
+---
 ## [2.2.0](https://github.com/tmlmt/milk-tracker/compare/v2.1.0..v2.2.0) - 2024-07-08
 
 ### 🚀 Enhancements
