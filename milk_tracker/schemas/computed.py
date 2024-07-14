@@ -11,9 +11,11 @@ from .base import UpdatableBaseModel
 class ComputedValues(UpdatableBaseModel):
     """All computed values."""
 
-    current_time: Annotated[str, StringConstraints(pattern=r"^\d{2}:\d{2}:\d{2}$")] = Field(
-        default_factory=lambda: get_current_time(include_sec=True),
-        description="Current time in format HH:MM:SS",
+    current_time: Annotated[str, StringConstraints(pattern=r"^\d{2}:\d{2}:\d{2}$")] = (
+        Field(
+            default_factory=lambda: get_current_time(include_sec=True),
+            description="Current time in format HH:MM:SS",
+        )
     )
     time_since_latest_end: timedelta = Field(
         default_factory=lambda: timedelta(0),
@@ -39,10 +41,12 @@ class ComputedValues(UpdatableBaseModel):
         default="Pause",
         description="Button label for ongoing meal"
     )  # fmt: skip
-    timer_meal_round: Annotated[str, StringConstraints(pattern=r"^(\d{2}:)?\d{2}:\d{2}$")] = Field(
+    timer_meal_round: Annotated[
+        str, StringConstraints(pattern=r"^(\d{2,}:)?\d{2}:\d{2}$")
+    ] = Field(
         default="00:00",
         description="Timer for meal round in format HH:mm",
-    )  # fmt: skip
+    )
     has_mother_taken_vitamins_today: bool = Field(
         default=False,
         description="Whether the mother has taken her vitamins today"
