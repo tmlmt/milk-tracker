@@ -2,6 +2,8 @@
 TITLE: "Milk Tracker"
 MAX_PASSWORD_ATTEMPTS: 3
 ASSETS_DIR: "assets"
-DATA_FILE_NAME: "journal.xlsx"
+MEALS_FILE_NAME: "journal.xlsx"
+MEMORIES_FILE_NAME: "memories.csv"
 PLOTLY_DEFAULT_CONFIG:
     modeBarButtonsToRemove: ["zoom2d", "pan2d", "select2d", "lasso2d", "zoomIn2d", "zoomOut2d"]
+BIRTHDAY: "2024-05-08"

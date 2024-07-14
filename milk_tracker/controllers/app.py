@@ -5,7 +5,8 @@ from typing import Optional, Union
 import pandas as pd
 import yaml
 from dotenv import load_dotenv
-from models.data import DataModel
+from models.meals import MealsDataModel
+from models.memories import MemoriesDataModel
 from nicegui import app
 from pydantic import ValidationError
 from schemas.computed import ComputedValues
@@ -54,9 +55,11 @@ class AppController:
 
     # Loading / Configuration
 
-    def load_data(self) -> None:
+    def load_meals(self) -> None:
         """Load meal data and datamodel."""
-        self.meals = DataModel(Path(self.config.ASSETS_DIR) / self.config.DATA_FILE_NAME)
+        self.meals = MealsDataModel(
+            Path(self.config.ASSETS_DIR) / self.config.MEALS_FILE_NAME
+        )
         # Add ongoing_meal if it was loaded from storage
         if self.ongoing_meal:
             self.meals.add(self.ongoing_meal)
@@ -93,6 +96,13 @@ class AppController:
             raise
         else:
             return config
+
+    def load_memories(self) -> None:
+        """Load memories and handler."""
+        self.memories = MemoriesDataModel(
+            file_path=Path(self.config.ASSETS_DIR) / self.config.MEMORIES_FILE_NAME,
+            birthday=self.config.BIRTHDAY,
+        )
 
     # Computes
 

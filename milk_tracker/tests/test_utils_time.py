@@ -1,8 +1,10 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 import pytest
 import time_machine
 from utils.time_utils import (
+    days_between_int,
+    days_between_txt,
     force_full_time,
     is_before_end_of_tomorrow,
     is_same_minute,
@@ -116,3 +118,25 @@ def test_is_before_end_of_tomorrow() -> None:
     assert is_before_end_of_tomorrow(datetime(2024, 6, 11, 23, 59))
     assert not is_before_end_of_tomorrow(datetime(2024, 6, 12, 0, 0, 0))
     assert not is_before_end_of_tomorrow(datetime(2024, 6, 12, 0, 1))
+
+
+def test_days_between() -> None:
+    """Test days_between_int() and days_between_txt()."""
+    assert days_between_int(date(2024, 1, 1), date(2024, 1, 1)) == 0
+    assert days_between_txt(date(2024, 1, 1), date(2024, 1, 1)) == "0 day"
+    assert days_between_int(date(2024, 1, 1), date(2024, 1, 8)) == 7  # noqa: PLR2004
+    assert days_between_txt(date(2024, 1, 1), date(2024, 1, 8)) == "1 week"
+    assert days_between_int(date(2024, 1, 1), date(2024, 1, 17)) == 16  # noqa: PLR2004
+    assert days_between_txt(date(2024, 1, 1), date(2024, 1, 17)) == "2 weeks 2 days"
+    assert days_between_int(date(2024, 1, 1), date(2024, 2, 1)) == 31  # noqa: PLR2004
+    assert days_between_txt(date(2024, 1, 1), date(2024, 2, 1)) == "1 month"
+    assert days_between_int(date(2024, 1, 1), date(2024, 2, 25)) == 55  # noqa: PLR2004
+    assert days_between_txt(date(2024, 1, 1), date(2024, 2, 25)) == "7 weeks 6 days"
+    assert days_between_txt(date(2024, 1, 1), date(2024, 3, 25)) == "2 months 24 days"
+    assert days_between_int(date(2023, 1, 1), date(2024, 3, 6)) == 430  # noqa: PLR2004
+    assert (
+        days_between_txt(date(2023, 1, 1), date(2024, 3, 6)) == "1 year 2 months 5 days"
+    )
+    assert (
+        days_between_txt(date(2020, 1, 1), date(2024, 4, 2)) == "4 years 3 months 1 day"
+    )

@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Literal, Optional
 from controllers.app import AppController
 from nicegui import ui
 from nicegui.events import ValueChangeEventArguments
+from pages.header import display_header
 from pydantic import ValidationError
 from utils.time_utils import (
     get_current_date,
@@ -27,7 +28,7 @@ def page(mt: AppController) -> None:
     # Specific CSS
     ui.add_sass(Path("css") / "table.sass")
 
-    mt.load_data()
+    mt.load_meals()
 
     def force_update_view() -> None:
         generate_latest_meals_table.refresh()
@@ -86,6 +87,8 @@ def page(mt: AppController) -> None:
         # Success message
         ui.notify("Meal added to history", type="positive")
         return True
+
+    display_header()
 
     ui.markdown("# Milk Tracker")
 

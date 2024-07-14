@@ -6,7 +6,7 @@ from schemas.meal import Meal
 from utils.time_utils import timedelta_to_float, timedelta_to_hrmin
 
 
-class DataModel:
+class MealsDataModel:
     """Holds the big data table as a Pandas DataFrame."""
 
     def __init__(self, file_path: Path) -> None:  # noqa: D107
@@ -52,15 +52,21 @@ class DataModel:
         # Convert to string first and combine, to circumvent errors
         # in converting excel format to datetime
         df["start_datetime"] = df.apply(
-            lambda row: pd.to_datetime(str(row["date"].date()) + " " + str(row["start_time"])),
+            lambda row: pd.to_datetime(
+                str(row["date"].date()) + " " + str(row["start_time"])
+            ),
             axis=1,
         )
         df["end_datetime"] = df.apply(
-            lambda row: pd.to_datetime(str(row["date"].date()) + " " + str(row["end_time"])),
+            lambda row: pd.to_datetime(
+                str(row["date"].date()) + " " + str(row["end_time"])
+            ),
             axis=1,
         )
 
-        df.loc[df["end_datetime"] < df["start_datetime"], "end_datetime"] += pd.Timedelta(days=1)
+        df.loc[df["end_datetime"] < df["start_datetime"], "end_datetime"] += pd.Timedelta(
+            days=1
+        )
 
         # Calculate other things of interest
         df["previous_end_datetime"] = df["end_datetime"].shift(1)
@@ -87,7 +93,8 @@ class DataModel:
 
         # Reset subset of columns for ongoing meals
         df.loc[
-            df["end_time"] == "", ["duration", "duration_hrmin", "duration_min", "end_datetime"]
+            df["end_time"] == "",
+            ["duration", "duration_hrmin", "duration_min", "end_datetime"],
         ] = [pd.NaT, "", 0.0, pd.NaT]
 
         return df
@@ -132,10 +139,18 @@ class DataModel:
                 avg_duration=pd.NamedAgg(column="duration", aggfunc="mean"),
                 max_duration=pd.NamedAgg(column="duration", aggfunc="max"),
                 sum_duration=pd.NamedAgg(column="duration", aggfunc="sum"),
-                min_previous_end=pd.NamedAgg(column="time_since_previous_end", aggfunc="min"),
-                avg_previous_end=pd.NamedAgg(column="time_since_previous_end", aggfunc="mean"),
-                max_previous_end=pd.NamedAgg(column="time_since_previous_end", aggfunc="max"),
-                sum_previous_end=pd.NamedAgg(column="time_since_previous_end", aggfunc="sum"),
+                min_previous_end=pd.NamedAgg(
+                    column="time_since_previous_end", aggfunc="min"
+                ),
+                avg_previous_end=pd.NamedAgg(
+                    column="time_since_previous_end", aggfunc="mean"
+                ),
+                max_previous_end=pd.NamedAgg(
+                    column="time_since_previous_end", aggfunc="max"
+                ),
+                sum_previous_end=pd.NamedAgg(
+                    column="time_since_previous_end", aggfunc="sum"
+                ),
             )
             .reset_index()
         )
@@ -184,23 +199,37 @@ class DataModel:
             },
         ).iloc[::-1]
 
-        summary_df[["min_duration", "avg_duration", "max_duration", "sum_duration"]] = summary_df[
-            ["min_duration", "avg_duration", "max_duration", "sum_duration"]
-        ].apply(
-            lambda x: x.apply(lambda x: timedelta_to_float(x, "m")),
+        summary_df[["min_duration", "avg_duration", "max_duration", "sum_duration"]] = (
+            summary_df[
+                ["min_duration", "avg_duration", "max_duration", "sum_duration"]
+            ].apply(
+                lambda x: x.apply(lambda x: timedelta_to_float(x, "m")),
+            )
         )
 
         summary_df[
-            ["min_previous_end", "avg_previous_end", "max_previous_end", "sum_previous_end"]
+            [
+                "min_previous_end",
+                "avg_previous_end",
+                "max_previous_end",
+                "sum_previous_end",
+            ]
         ] = summary_df[
-            ["min_previous_end", "avg_previous_end", "max_previous_end", "sum_previous_end"]
+            [
+                "min_previous_end",
+                "avg_previous_end",
+                "max_previous_end",
+                "sum_previous_end",
+            ]
         ].apply(
             lambda x: x.apply(lambda x: timedelta_to_float(x, "h")),
         )
 
         self.df_summary_raw = summary_df
 
-    def delete_latest(self, meal_type: Literal["ongoing", "finished", "any"] = "any") -> None:
+    def delete_latest(
+        self, meal_type: Literal["ongoing", "finished", "any"] = "any"
+    ) -> None:
         """Delete latest meal from dataset."""
         if meal_type != "ongoing" or (
             meal_type == "ongoing" and self.df.iloc[-1]["end_time"] == ""
