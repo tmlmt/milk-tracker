@@ -141,3 +141,5 @@ def test_days_between() -> None:
     assert (
         days_between_txt(date(2020, 1, 1), date(2024, 4, 2)) == "4 years 3 months 1 day"
     )
+    # When the later date is just after new years
+    assert days_between_txt(date(2023, 11, 10), date(2024, 1, 1)) == "7 weeks 3 days"

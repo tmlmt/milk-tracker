@@ -320,7 +320,15 @@ def days_between_txt(date1: date, date2: date) -> str:
     # Adjust for negative months and days
     if days < 0:
         months -= 1
-        days += (date2.replace(day=1) - date2.replace(month=date2.month - 1, day=1)).days
+        if date2.month == 1:
+            days += (
+                date2.replace(day=1)
+                - date2.replace(year=date2.year - 1, month=date2.month + 11, day=1)
+            ).days
+        else:
+            days += (
+                date2.replace(day=1) - date2.replace(month=date2.month - 1, day=1)
+            ).days
 
     if months < 0:
         years -= 1
@@ -333,15 +341,10 @@ def days_between_txt(date1: date, date2: date) -> str:
     if months and (months >= 2 or days < 7):  # noqa: PLR2004
         result.append(f"{months} month{'s' if months > 1 else ''}")
     elif (not months and days > 0) or (months and months) == 1:
-        weeks = (
-            days_between_int(
-                date(2024, date1.month, date1.day), date(2024, date2.month, date2.day)
-            )
-            // 7
-        )
+        weeks = days_between_int(date1, date2) // 7
         days = days_between_int(
-            date(2024, date1.month, date1.day) + timedelta(weeks=weeks),
-            date(2024, date2.month, date2.day),
+            date1 + timedelta(weeks=weeks),
+            date2,
         )
         result.append(f"{weeks} week{'s' if weeks > 1 else ''}")
     if days or not (years or months or weeks or days):
