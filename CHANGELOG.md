@@ -1,6 +1,27 @@
 # Changelog
 
 ---
+## [2.3.1](https://github.com/tmlmt/milk-tracker/compare/v2.3.0..v2.3.1) - 2024-07-14
+
+### 🩹 Fixes
+
+- app crashes when it was last locked with an ongoing meal more than 100 hrs ago - ([75a5550](https://github.com/tmlmt/milk-tracker/commit/75a5550b4c2b53e5f4f6a0d135fe6d8721563b5a)) - Thomas Lamant
+
+### 🎨 Style
+
+- improve time_utils and tests - ([585267e](https://github.com/tmlmt/milk-tracker/commit/585267e4c265507e9ecd5216d3b64c6e135e0248)) - Thomas Lamant
+- resolve most ruff warnings - ([3119845](https://github.com/tmlmt/milk-tracker/commit/3119845310c7c4fc65faa5345b3655c6d0342a6d)) - Thomas Lamant
+
+### 🤖 CI
+
+- fix coverage workflow - ([e6638a0](https://github.com/tmlmt/milk-tracker/commit/e6638a0caced0c58879d941c7601aa77cb4a48bb)) - Thomas Lamant
+
+### 🏡 Chore
+
+- **(coverage)** update badge - ([38f3cb5](https://github.com/tmlmt/milk-tracker/commit/38f3cb5b727b8e105662f4d98da223dbd8221f16)) - github-actions[bot]
+- **(deps)** fix inline-snapshot in env file - ([0155431](https://github.com/tmlmt/milk-tracker/commit/0155431f92de980c4212c9bc2b5da222c55bf950)) - Thomas Lamant
+
+---
 ## [2.3.0](https://github.com/tmlmt/milk-tracker/compare/v2.2.0..v2.3.0) - 2024-07-14
 
 ### 🚀 Enhancements
