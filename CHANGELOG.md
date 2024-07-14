@@ -1,6 +1,13 @@
 # Changelog
 
 ---
+## [2.3.2](https://github.com/tmlmt/milk-tracker/compare/v2.3.1..v2.3.2) - 2024-07-14
+
+### 🎨 Style
+
+- align burger menu with title - ([c7c79b3](https://github.com/tmlmt/milk-tracker/commit/c7c79b366a9bc09406cb7a4511e0bf7e0e7bf78d)) - Thomas Lamant
+
+---
 ## [2.3.1](https://github.com/tmlmt/milk-tracker/compare/v2.3.0..v2.3.1) - 2024-07-14
 
 ### 🩹 Fixes
