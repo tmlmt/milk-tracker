@@ -79,8 +79,9 @@ def test_time_since() -> None:
 def test_time_between() -> None:
     """Test time_between()."""
     assert (
-        time_between(datetime(2024, 6, 10, 21, 52), datetime(2024, 6, 10, 20, 50)) == "01:02:00"
-    )  # fmt: skip
+        time_between(datetime(2024, 6, 10, 21, 52), datetime(2024, 6, 10, 20, 50))
+        == "01:02:00"
+    )
     assert (
         time_between(datetime(2024, 6, 10, 21, 52, 12), datetime(2024, 6, 10, 21, 50, 6))
         == "02:06"

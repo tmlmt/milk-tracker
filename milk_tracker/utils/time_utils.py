@@ -163,15 +163,16 @@ def is_time_format(
         Test result
 
     """
-    if time_format in ["short", "any"] and re.match(
-        r"([01]\d|2[0-3]):([0-5]\d)$", test_string
-    ):
-        return True
-    if time_format in ["full", "any"] and re.match(
-        r"([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$", test_string
-    ):
-        return True
-    return False
+    return bool(
+        (
+            time_format in ["short", "any"]
+            and re.match(r"([01]\d|2[0-3]):([0-5]\d)$", test_string)
+        )
+        or (
+            time_format in ["full", "any"]
+            and re.match(r"([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$", test_string)
+        )
+    )
 
 
 def force_full_time(time_string: str) -> str:
