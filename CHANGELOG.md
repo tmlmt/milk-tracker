@@ -1,6 +1,13 @@
 # Changelog
 
 ---
+## [2.3.5](https://github.com/tmlmt/milk-tracker/compare/v2.3.4..v2.3.5) - 2024-07-21
+
+### 🩹 Fixes
+
+- **(systemd)** install target - ([1d4ca30](https://github.com/tmlmt/milk-tracker/commit/1d4ca3057351d6c1c60b31936674bb1036e8b53b)) - Thomas Lamant
+
+---
 ## [2.3.4](https://github.com/tmlmt/milk-tracker/compare/v2.3.3..v2.3.4) - 2024-07-14
 
 ### 🩹 Fixes
