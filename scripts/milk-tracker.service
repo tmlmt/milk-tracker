@@ -9,4 +9,4 @@ WorkingDirectory=/var/www/milktracker/milk_tracker
 ExecStart=/usr/local/bin/micromamba run -n milktracker python main.py
 
 [Install]
-WantedBy=milti-user.target
+WantedBy=multi-user.target
